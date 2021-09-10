@@ -8,9 +8,13 @@ def capacitor_pods
 end
 
 target 'Plugin' do
+  use_frameworks!
+  pod 'JWPlayerKit', '>= 4.0.0'
   capacitor_pods
 end
 
 target 'PluginTests' do
+  use_frameworks!
+  pod 'JWPlayerKit', '>= 4.0.0'
   capacitor_pods
 end

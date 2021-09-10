@@ -3,12 +3,15 @@ ext {
     androidxAppCompatVersion = project.hasProperty('androidxAppCompatVersion') ? rootProject.ext.androidxAppCompatVersion : '1.2.0'
     androidxJunitVersion = project.hasProperty('androidxJunitVersion') ? rootProject.ext.androidxJunitVersion : '1.1.2'
     androidxEspressoCoreVersion = project.hasProperty('androidxEspressoCoreVersion') ? rootProject.ext.androidxEspressoCoreVersion : '3.3.0'
+    jwPlayerVersion = project.hasProperty('jwPlayerVersion') ? rootProject.ext.jwPlayerVersion : '4.0.0'
+    exoplayerVersion = project.hasProperty('exoplayerVersion') ? rootProject.ext.exoplayerVersion : '2.14.0'
 }
 
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
+
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.2.1'
@@ -43,7 +46,6 @@ android {
 
 repositories {
     google()
-    jcenter()
     mavenCentral()
 }
 
@@ -55,4 +57,20 @@ dependencies {
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+    // JWPlayer SDK
+    implementation "com.jwplayer:jwplayer-core:$jwPlayerVersion"
+    implementation "com.jwplayer:jwplayer-common:$jwPlayerVersion"
+    
+    // ExoPlayer dependencies
+    implementation "com.google.android.exoplayer:exoplayer-core:$exoplayerVersion"
+    implementation "com.google.android.exoplayer:exoplayer-dash:$exoplayerVersion"
+    implementation "com.google.android.exoplayer:exoplayer-hls:$exoplayerVersion"
+    implementation "com.google.android.exoplayer:exoplayer-smoothstreaming:$exoplayerVersion"
+    implementation "com.google.android.exoplayer:exoplayer-ui:$exoplayerVersion"
+
+    // JW Player Native UI dependencies
+    implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'androidx.viewpager2:viewpager2:1.0.0'
+    implementation 'com.android.volley:volley:1.2.0'
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
 }
