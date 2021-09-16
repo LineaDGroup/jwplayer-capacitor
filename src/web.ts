@@ -15,4 +15,8 @@ export class JWPlayerWeb extends WebPlugin implements JWPlayerPlugin {
   async create(options: {videoURL : string}): Promise<any> {
     console.log('creating a web player with options',options);
   }
+
+  async remove(): Promise<any> {
+    console.log('removing a web player');
+  }
 }
