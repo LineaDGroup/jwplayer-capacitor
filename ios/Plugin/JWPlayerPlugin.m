@@ -7,4 +7,5 @@ CAP_PLUGIN(JWPlayerPlugin, "JWPlayer",
            CAP_PLUGIN_METHOD(echo, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(initialize, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(create, CAPPluginReturnPromise);
-)
+           CAP_PLUGIN_METHOD(remove, CAPPluginReturnPromise);
+           )
