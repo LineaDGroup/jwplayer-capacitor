@@ -16,6 +16,8 @@ public class JWPlayerPlugin: CAPPlugin {
     var GOOGLE_CAST_ID : String?
     private var playerViewController : JWPlayerViewController?
     private var castController : JWCastController?
+    private var isFront = false
+
     
     @objc func echo(_ call: CAPPluginCall) {
         let value = call.getString("value") ?? ""
@@ -47,10 +49,18 @@ public class JWPlayerPlugin: CAPPlugin {
     @objc func remove(_ call: CAPPluginCall){
         DispatchQueue.main.async {
             if self.playerViewController != nil {
-                self.webView?.superview?.willRemoveSubview(self.playerViewController!.view)
+                //self.webView?.superview?.willRemoveSubview(self.playerViewController!.view)
                 self.playerViewController!.view.removeFromSuperview()
                 self.playerViewController!.removeFromParent()
                 self.playerViewController!.view = nil
+                self.playerViewController = nil
+                
+                if !self.isFront {
+                    self.webView?.isOpaque = true
+                    self.webView?.backgroundColor = UIColor.white
+                    self.webView?.scrollView.backgroundColor = UIColor.white
+                }
+                
             }
         }
         call.resolve([
@@ -75,7 +85,7 @@ public class JWPlayerPlugin: CAPPlugin {
                     let y = call.getDouble("y") ?? 0
                     let autostart = call.getBool("autostart") ?? false
                     let forceFullScreenOnLandscape = call.getBool("forceFullScreenOnLandscape") ?? false
-                    
+                    self.isFront = call.getBool("front") ?? false
                     if videoURL.isEmpty {
                         call.reject("You have to provide a fileURL to playback")
                         return
@@ -84,6 +94,31 @@ public class JWPlayerPlugin: CAPPlugin {
                     var playerItem = try JWPlayerItemBuilder()
                         .file(URL(string: videoURL)!)
                         .build()
+                    
+                    if let captions = call.getArray("captions", [String: Any].self){
+                        var captionTracks = [JWMediaTrack]()
+                        for caption in captions {
+                            let urlString = caption["url"] as! String?
+                            let url = URL(string: urlString!)!
+                            let builder = JWCaptionTrackBuilder()
+                            .file(url)
+                                .label(caption["label"] as! String)
+                                .defaultTrack((caption["default"] as! Bool?)!)
+                            do {
+                                let englishTrack = try builder.build()
+                                captionTracks.append(englishTrack)
+                            } catch {
+                                // Handle error
+                            }
+                        }
+                        
+                        playerItem = try JWPlayerItemBuilder()
+                            .file(URL(string: videoURL)!)
+                            .mediaTracks(captionTracks)
+                            .build()
+                    }
+                    
+                    
                     
                     if !posterURL.isEmpty {
                         let posterImage = URL(string:posterURL)!
@@ -104,37 +139,36 @@ public class JWPlayerPlugin: CAPPlugin {
                         self.playerViewController!.forceFullScreenOnLandscape = true
                         self.playerViewController!.forceLandscapeOnFullScreen = true
                     }
-                    self.playerViewController?.playerView.videoGravity = .resizeAspectFill
+                    self.playerViewController?.playerView.videoGravity = .resize
                     self.playerViewController!.view?.autoresizingMask = [.flexibleHeight, .flexibleWidth]
                     //self.playerViewController!.view?.translatesAutoresizingMaskIntoConstraints = false
                     
                     /*
-                     self.bridge?.viewController?.view.addSubview(self.playerViewController!.view)
-                     self.bridge?.viewController?.addChild(self.playerViewController!)
-                     self.playerViewController!.didMove(toParent: self.bridge?.viewController?.parent)
-                     */
-                    self.webView?.isOpaque = false
-                    self.webView?.backgroundColor = UIColor.clear
-                    self.webView?.scrollView.backgroundColor = UIColor.clear
-                    self.webView?.superview?.addSubview(self.playerViewController!.view)
-                    self.bridge?.viewController?.addChild(self.playerViewController!)
-                    self.webView?.superview?.bringSubviewToFront(self.webView!)
-                    let screenRect = UIScreen.main.bounds
-                    let screenWidth = screenRect.size.width
-                    let screenHeight = screenRect.size.height
                     
+                     */
+                
+                    if !self.isFront {
+                        self.webView?.isOpaque = false
+                        self.webView?.backgroundColor = UIColor.clear
+                        self.webView?.scrollView.backgroundColor = UIColor.clear
+                        self.webView?.superview?.addSubview(self.playerViewController!.view)
+                        
+                        //self.bridge?.viewController?.view.superview?.addSubview(self.playerViewController!.view)
+
+                        self.bridge?.viewController?.addChild(self.playerViewController!)
+                        //self.bridge?.viewController?.view.bringSubviewToFront(self.webView!)
+
+                        self.webView?.superview?.bringSubviewToFront(self.webView!)
+                       // self.bridge?.viewController?.view.superview?.bringSubviewToFront((self.bridge?.viewController?.view)!)
+                    } else{
+                        self.bridge?.viewController?.view.addSubview(self.playerViewController!.view)
+                        self.bridge?.viewController?.addChild(self.playerViewController!)
+                        self.playerViewController!.didMove(toParent: self.bridge?.viewController?.parent)
+                    }
+    
                     if self.GOOGLE_CAST_ID != nil && !(self.GOOGLE_CAST_ID?.isEmpty ?? false) {
                         self.setUpCastController()
                     }
-                    
-                    /*
-                     print(screenWidth)
-                     print(screenHeight)
-                     print(x)
-                     print(y)
-                     print(x + width)
-                     print(y + height )
-                     */
                     self.notifyListeners("onJWPlayerReady", data: nil)
                 }
             }catch let error as NSError {
@@ -151,5 +185,6 @@ public class JWPlayerPlugin: CAPPlugin {
         self.castController = JWCastController(player: self.playerViewController!.player)
     }
     
+
     
 }

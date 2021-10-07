@@ -1,4 +1,5 @@
 import { WebPlugin } from '@capacitor/core';
+import { JWPlayerMediaTrack } from '.';
 
 import type { JWPlayerPlugin } from './definitions';
 
@@ -12,7 +13,7 @@ export class JWPlayerWeb extends WebPlugin implements JWPlayerPlugin {
     console.log('initializing player for web with options',options);
   }
 
-  async create(options: { videoURL: string, posterURL?: string,  forceFullScreenOnLandscape?: boolean, x: number, y:number, width: number, height: number }): Promise<any> {
+  async create(options: { videoURL: string, posterURL?: string,  forceFullScreenOnLandscape?: boolean, x: number, y:number, width: number, height: number, captions?: Array<JWPlayerMediaTrack> , front?: boolean}): Promise<any> {
     console.log('creating a web player with options',options);
   }
 
