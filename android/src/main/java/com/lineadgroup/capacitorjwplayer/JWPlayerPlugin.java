@@ -11,7 +11,6 @@ import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
-
 import com.getcapacitor.annotation.Permission;
 import com.jwplayer.pub.api.configuration.PlayerConfig;
 import com.jwplayer.pub.api.license.LicenseUtil;
@@ -33,6 +32,8 @@ public class JWPlayerPlugin extends Plugin {
 
     private JWPlayer implementation = new JWPlayer();
     String JWPLAYER_KEY = "";
+    String GOOGLE_CAST_ID = "";
+    private boolean isFront = false;
     @PluginMethod
     public void echo(PluginCall call) {
         String value = call.getString("value");
