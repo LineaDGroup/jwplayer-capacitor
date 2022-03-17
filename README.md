@@ -16,6 +16,8 @@ npx cap sync
 * [`echo(...)`](#echo)
 * [`initialize(...)`](#initialize)
 * [`create(...)`](#create)
+* [`remove()`](#remove)
+* [Interfaces](#interfaces)
 
 </docgen-index>
 
@@ -40,12 +42,12 @@ echo(options: { value: string; }) => any
 ### initialize(...)
 
 ```typescript
-initialize(options: { androidLicenseKey: string; iosLicenseKey: string; }) => any
+initialize(options: { webLicenseKey?: string; androidLicenseKey?: string; iosLicenseKey?: string; googleCastId?: string; }) => any
 ```
 
-| Param         | Type                                                               |
-| ------------- | ------------------------------------------------------------------ |
-| **`options`** | <code>{ androidLicenseKey: string; iosLicenseKey: string; }</code> |
+| Param         | Type                                                                                                                |
+| ------------- | ------------------------------------------------------------------------------------------------------------------- |
+| **`options`** | <code>{ webLicenseKey?: string; androidLicenseKey?: string; iosLicenseKey?: string; googleCastId?: string; }</code> |
 
 **Returns:** <code>any</code>
 
@@ -55,15 +57,38 @@ initialize(options: { androidLicenseKey: string; iosLicenseKey: string; }) => an
 ### create(...)
 
 ```typescript
-create(options: { videoURL: string; }) => any
+create(options: { divId?: string; videoURL: string; posterURL?: string; forceFullScreenOnLandscape?: boolean; x: number; y: number; width: number; height: number; captions?: Array<JWPlayerMediaTrack>; front?: boolean; }) => any
 ```
 
-| Param         | Type                               |
-| ------------- | ---------------------------------- |
-| **`options`** | <code>{ videoURL: string; }</code> |
+| Param         | Type                                                                                                                                                                                               |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`options`** | <code>{ divId?: string; videoURL: string; posterURL?: string; forceFullScreenOnLandscape?: boolean; x: number; y: number; width: number; height: number; captions?: any; front?: boolean; }</code> |
 
 **Returns:** <code>any</code>
 
 --------------------
+
+
+### remove()
+
+```typescript
+remove() => any
+```
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### Interfaces
+
+
+#### JWPlayerMediaTrack
+
+| Prop          | Type                 |
+| ------------- | -------------------- |
+| **`url`**     | <code>string</code>  |
+| **`label`**   | <code>string</code>  |
+| **`default`** | <code>boolean</code> |
 
 </docgen-api>

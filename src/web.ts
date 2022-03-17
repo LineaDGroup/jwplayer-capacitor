@@ -1,23 +1,94 @@
-import { WebPlugin } from '@capacitor/core';
-import { JWPlayerMediaTrack } from '.';
+import {WebPlugin} from '@capacitor/core';
+import {JWPlayerMediaTrack} from '.';
+import type {JWPlayerPlugin} from './definitions';
 
-import type { JWPlayerPlugin } from './definitions';
+declare var jwplayer: any;
 
 export class JWPlayerWeb extends WebPlugin implements JWPlayerPlugin {
-  async echo(options: { value: string }): Promise<{ value: string }> {
-    console.log('ECHO', options);
-    return options;
-  }
+    private isInit: boolean = false;
+    private playerInstance : any | undefined = undefined;
+    async echo(options: { value: string }): Promise<{ value: string }> {
+        console.log('ECHO', options);
+        return options;
+    }
 
-  async initialize(options: { androidLicenseKey?: string, iosLicenseKey?: string , googleCastId?: string}): Promise<any> {
-    console.log('initializing player for web with options',options);
-  }
+    async initialize(options: { webLicenseKey?: string, androidLicenseKey?: string, iosLicenseKey?: string, googleCastId?: string }): Promise<any> {
+        if (options.webLicenseKey) {
+            jwplayer.key = options.webLicenseKey;
+            jwplayer.debug = true;
+            this.isInit = true;
+            console.log('Init', options);
+        } else {
+            console.error('Jwplayer does not have a key', options);
+        }
+    }
 
-  async create(options: { videoURL: string, posterURL?: string,  forceFullScreenOnLandscape?: boolean, x: number, y:number, width: number, height: number, captions?: Array<JWPlayerMediaTrack> , front?: boolean}): Promise<any> {
-    console.log('creating a web player with options',options);
-  }
+    async create(options: { divId?: string, videoURL: string, posterURL?: string, forceFullScreenOnLandscape?: boolean, x: number, y: number, width: number, height: number, captions?: Array<JWPlayerMediaTrack>, front?: boolean }): Promise<any> {
+        if (this.isInit) {
+            setTimeout(() => {
+                if (this.playerInstance === undefined){
+                    this.playerInstance = jwplayer(options.divId);
+                    this.playerInstance.setup({
+                        "file": options.videoURL,
+                        "image": options.posterURL,
+                        "height": options.height,
+                        "width": options.width,
+                        "tracks": options.captions?.map(item => {
+                            return {
+                                'kind': "captions",
+                                'file': item.url,
+                                'label': item.label
+                            }
+                        })
+                    })
+                } else {
+                    this.playerInstance.load({
+                        "file": options.videoURL,
+                        "image": options.posterURL,
+                        "height": options.height,
+                        "width": options.width,
+                        "tracks": options.captions?.map(item => {
+                            return {
+                                'kind': "captions",
+                                'file': item.url,
+                                'label': item.label
+                            }
+                        })
+                    }
+                    )
+                }
+                /*this.divId = options.divId;
+                console.log('Creating', options);
+                console.log(jwplayer);
+                jwplayer(this.divId ).setup({
+                    "file": options.videoURL,
+                    "image": options.posterURL,
+                    "height": options.height,
+                    "width": options.width,
+                    "tracks": options.captions?.map(item => {
+                        return {
+                            'kind': "captions",
+                            'file': item.url,
+                            'label': item.label
+                        }
+                    })
 
-  async remove(): Promise<any> {
-    console.log('removing a web player');
-  }
+                });
+                console.log(jwplayer().getState());*/
+            },1000);
+
+        } else {
+            console.error("Jwplayer has not initialized")
+        }
+
+    }
+
+    async remove(): Promise<any> {
+        if (this.playerInstance) {
+            await this.playerInstance!.remove();
+            this.playerInstance = undefined;
+            this.isInit = false;
+        }
+        return true;
+    }
 }
