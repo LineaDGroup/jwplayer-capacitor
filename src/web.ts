@@ -6,7 +6,8 @@ declare var jwplayer: any;
 
 export class JWPlayerWeb extends WebPlugin implements JWPlayerPlugin {
     private isInit: boolean = false;
-    private playerInstance : any | undefined = undefined;
+    private playerInstance: any | undefined = undefined;
+
     async echo(options: { value: string }): Promise<{ value: string }> {
         console.log('ECHO', options);
         return options;
@@ -26,9 +27,10 @@ export class JWPlayerWeb extends WebPlugin implements JWPlayerPlugin {
     async create(options: { divId?: string, videoURL: string, posterURL?: string, forceFullScreenOnLandscape?: boolean, x: number, y: number, width: number, height: number, captions?: Array<JWPlayerMediaTrack>, front?: boolean }): Promise<any> {
         if (this.isInit) {
             setTimeout(() => {
-                if (this.playerInstance === undefined){
+                if (this.playerInstance === undefined) {
                     this.playerInstance = jwplayer(options.divId);
                     this.playerInstance.setup({
+                        "autostart": true,
                         "file": options.videoURL,
                         "image": options.posterURL,
                         "height": options.height,
@@ -43,39 +45,22 @@ export class JWPlayerWeb extends WebPlugin implements JWPlayerPlugin {
                     })
                 } else {
                     this.playerInstance.load({
-                        "file": options.videoURL,
-                        "image": options.posterURL,
-                        "height": options.height,
-                        "width": options.width,
-                        "tracks": options.captions?.map(item => {
-                            return {
-                                'kind': "captions",
-                                'file': item.url,
-                                'label': item.label
-                            }
-                        })
-                    }
+                            "autostart": true,
+                            "file": options.videoURL,
+                            "image": options.posterURL,
+                            "height": options.height,
+                            "width": options.width,
+                            "tracks": options.captions?.map(item => {
+                                return {
+                                    'kind': "captions",
+                                    'file': item.url,
+                                    'label': item.label
+                                }
+                            })
+                        }
                     )
                 }
-                /*this.divId = options.divId;
-                console.log('Creating', options);
-                console.log(jwplayer);
-                jwplayer(this.divId ).setup({
-                    "file": options.videoURL,
-                    "image": options.posterURL,
-                    "height": options.height,
-                    "width": options.width,
-                    "tracks": options.captions?.map(item => {
-                        return {
-                            'kind': "captions",
-                            'file': item.url,
-                            'label': item.label
-                        }
-                    })
-
-                });
-                console.log(jwplayer().getState());*/
-            },1000);
+            }, 1000);
 
         } else {
             console.error("Jwplayer has not initialized")
