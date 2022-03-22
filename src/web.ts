@@ -24,49 +24,6 @@ export class JWPlayerWeb extends WebPlugin implements JWPlayerPlugin {
         }
     }
 
-    async create(options: { divId?: string, videoURL: string, posterURL?: string, forceFullScreenOnLandscape?: boolean, x: number, y: number, width: number, height: number, captions?: Array<JWPlayerMediaTrack>, front?: boolean }): Promise<any> {
-        if (this.isInit) {
-            setTimeout(() => {
-                if (this.playerInstance === undefined) {
-                    this.playerInstance = jwplayer(options.divId);
-                    this.playerInstance.setup({
-                        "autostart": true,
-                        "file": options.videoURL,
-                        "image": options.posterURL,
-                        "height": options.height,
-                        "width": options.width,
-                        "tracks": options.captions?.map(item => {
-                            return {
-                                'kind': "captions",
-                                'file': item.url,
-                                'label': item.label
-                            }
-                        })
-                    })
-                } else {
-                    this.playerInstance.load({
-                            "autostart": true,
-                            "file": options.videoURL,
-                            "image": options.posterURL,
-                            "height": options.height,
-                            "width": options.width,
-                            "tracks": options.captions?.map(item => {
-                                return {
-                                    'kind': "captions",
-                                    'file': item.url,
-                                    'label': item.label
-                                }
-                            })
-                        }
-                    )
-                }
-            }, 1000);
-
-        } else {
-            console.error("Jwplayer has not initialized")
-        }
-
-    }
 
     async remove(): Promise<any> {
         if (this.playerInstance) {
@@ -75,5 +32,39 @@ export class JWPlayerWeb extends WebPlugin implements JWPlayerPlugin {
             this.isInit = false;
         }
         return true;
+    }
+
+    async create(options: { webConfiguration?: { container: string; properties?: {} }; nativeConfiguration?: { videoURL: string; posterURL?: string; forceFullScreenOnLandscape?: boolean; x: number; y: number; width: number; height: number; front?: boolean }; captions?: Array<JWPlayerMediaTrack> }): Promise<any> {
+        if (this.isInit && options.webConfiguration) {
+            if (this.playerInstance === undefined) {
+                this.playerInstance = jwplayer( options.webConfiguration!.container);
+                this.playerInstance.setup({
+                    ... options.webConfiguration!.properties ?? {},
+                    "tracks":  options.captions?.map(item => {
+                        return {
+                            'kind': "captions",
+                            'file': item.file,
+                            'label': item.label
+                        }
+                    })
+                })
+            } else {
+                this.playerInstance.load({
+                        ... options.webConfiguration!.properties ?? {},
+                        "tracks":  options.captions?.map(item => {
+                            return {
+                                'kind': "captions",
+                                'file': item.file,
+                                'label': item.label
+                            }
+                        })
+                    }
+                )
+            }
+            return true;
+        } else {
+            console.error("Jwplayer has not initialized")
+            return false;
+        }
     }
 }

@@ -8,7 +8,7 @@
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedParameters": false,
     "outDir": "dist/esm",
     "allowJs": true,
     "pretty": true,
