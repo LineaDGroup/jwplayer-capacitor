@@ -1,12 +1,14 @@
 import {WebPlugin} from '@capacitor/core';
-import {JWPlayerMediaTrack} from '.';
+
+import type {JWPlayerMediaTrack} from '.';
 import type {JWPlayerPlugin} from './definitions';
 
-declare var jwplayer: any;
+declare let jwplayer: any;
 
 export class JWPlayerWeb extends WebPlugin implements JWPlayerPlugin {
-    private isInit: boolean = false;
-    private playerInstance : any | undefined = undefined;
+    private isInit = false;
+    private playerInstance: any | undefined = undefined;
+
     async echo(options: { value: string }): Promise<{ value: string }> {
         console.log('ECHO', options);
         return options;
@@ -23,66 +25,6 @@ export class JWPlayerWeb extends WebPlugin implements JWPlayerPlugin {
         }
     }
 
-    async create(options: { divId?: string, videoURL: string, posterURL?: string, forceFullScreenOnLandscape?: boolean, x: number, y: number, width: number, height: number, captions?: Array<JWPlayerMediaTrack>, front?: boolean }): Promise<any> {
-        if (this.isInit) {
-            setTimeout(() => {
-                if (this.playerInstance === undefined){
-                    this.playerInstance = jwplayer(options.divId);
-                    this.playerInstance.setup({
-                        "file": options.videoURL,
-                        "image": options.posterURL,
-                        "height": options.height,
-                        "width": options.width,
-                        "tracks": options.captions?.map(item => {
-                            return {
-                                'kind': "captions",
-                                'file': item.url,
-                                'label': item.label
-                            }
-                        })
-                    })
-                } else {
-                    this.playerInstance.load({
-                        "file": options.videoURL,
-                        "image": options.posterURL,
-                        "height": options.height,
-                        "width": options.width,
-                        "tracks": options.captions?.map(item => {
-                            return {
-                                'kind': "captions",
-                                'file': item.url,
-                                'label': item.label
-                            }
-                        })
-                    }
-                    )
-                }
-                /*this.divId = options.divId;
-                console.log('Creating', options);
-                console.log(jwplayer);
-                jwplayer(this.divId ).setup({
-                    "file": options.videoURL,
-                    "image": options.posterURL,
-                    "height": options.height,
-                    "width": options.width,
-                    "tracks": options.captions?.map(item => {
-                        return {
-                            'kind': "captions",
-                            'file': item.url,
-                            'label': item.label
-                        }
-                    })
-
-                });
-                console.log(jwplayer().getState());*/
-            },1000);
-
-        } else {
-            console.error("Jwplayer has not initialized")
-        }
-
-    }
-
     async remove(): Promise<any> {
         if (this.playerInstance) {
             await this.playerInstance!.remove();
@@ -90,5 +32,36 @@ export class JWPlayerWeb extends WebPlugin implements JWPlayerPlugin {
             this.isInit = false;
         }
         return true;
+    }
+
+    async create(options: { webConfiguration?: { container: string; properties?: any }; nativeConfiguration?: { videoURL: string; posterURL?: string; forceFullScreenOnLandscape?: boolean; x: number; y: number; width: number; height: number; front?: boolean }; captions?: JWPlayerMediaTrack[] }): Promise<any> {
+        if (this.isInit && options.webConfiguration) {
+            if (this.playerInstance === undefined) {
+                this.playerInstance = jwplayer(options.webConfiguration!.container);
+                this.playerInstance.setup({
+                    ...options.webConfiguration!.properties ?? {},
+                    "tracks": options.captions?.map(item => {
+                        return {
+                            'kind': "captions",
+                            'file': item.file,
+                            'label': item.label
+                        }
+                    })
+                })
+            } else {
+                this.playerInstance.load({
+                        ...options.webConfiguration!.properties ?? {},
+                        "tracks": options.captions?.map(item => {
+                            return {
+                                'kind': "captions",
+                                'file': item.file,
+                                'label': item.label
+                            }
+                        })
+                    }
+                )
+            }
+            return true;
+        }
     }
 }
