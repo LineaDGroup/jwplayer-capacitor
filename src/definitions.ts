@@ -1,5 +1,5 @@
-export interface JWPlayerMediaTrack {
-  file: string;
+export interface JWPlayerMediaTrack{
+  file:string;
   label: string;
   default: boolean;
 }
