@@ -17,6 +17,8 @@ npx cap sync
 * [`initialize(...)`](#initialize)
 * [`create(...)`](#create)
 * [`remove()`](#remove)
+* [`getPosition()`](#getposition)
+* [`seek(...)`](#seek)
 * [Interfaces](#interfaces)
 
 </docgen-index>
@@ -42,12 +44,12 @@ echo(options: { value: string; }) => any
 ### initialize(...)
 
 ```typescript
-initialize(options: { webLicenseKey?: string; androidLicenseKey?: string; iosLicenseKey?: string; googleCastId?: string; }) => any
+initialize(options: { webLicenseKey?: string; androidLicenseKey?: string; iosLicenseKey?: string; googleCastId?: string; debug?: boolean; }) => any
 ```
 
-| Param         | Type                                                                                                                |
-| ------------- | ------------------------------------------------------------------------------------------------------------------- |
-| **`options`** | <code>{ webLicenseKey?: string; androidLicenseKey?: string; iosLicenseKey?: string; googleCastId?: string; }</code> |
+| Param         | Type                                                                                                                                 |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **`options`** | <code>{ webLicenseKey?: string; androidLicenseKey?: string; iosLicenseKey?: string; googleCastId?: string; debug?: boolean; }</code> |
 
 **Returns:** <code>any</code>
 
@@ -57,12 +59,12 @@ initialize(options: { webLicenseKey?: string; androidLicenseKey?: string; iosLic
 ### create(...)
 
 ```typescript
-create(options: { divId?: string; videoURL: string; posterURL?: string; forceFullScreenOnLandscape?: boolean; x: number; y: number; width: number; height: number; captions?: Array<JWPlayerMediaTrack>; front?: boolean; }) => any
+create(options: { webConfiguration?: { container: string; properties?: any; }; nativeConfiguration?: any; captions?: JWPlayerMediaCaption[]; tracks?: JWPlayerMediaTrack[]; }) => any
 ```
 
-| Param         | Type                                                                                                                                                                                               |
-| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`options`** | <code>{ divId?: string; videoURL: string; posterURL?: string; forceFullScreenOnLandscape?: boolean; x: number; y: number; width: number; height: number; captions?: any; front?: boolean; }</code> |
+| Param         | Type                                                                                                                                 |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **`options`** | <code>{ webConfiguration?: { container: string; properties?: any; }; nativeConfiguration?: any; captions?: {}; tracks?: {}; }</code> |
 
 **Returns:** <code>any</code>
 
@@ -80,14 +82,48 @@ remove() => any
 --------------------
 
 
+### getPosition()
+
+```typescript
+getPosition() => any
+```
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### seek(...)
+
+```typescript
+seek(options: { position: number; }) => any
+```
+
+| Param         | Type                               |
+| ------------- | ---------------------------------- |
+| **`options`** | <code>{ position: number; }</code> |
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
 ### Interfaces
+
+
+#### JWPlayerMediaCaption
+
+| Prop        | Type                |
+| ----------- | ------------------- |
+| **`file`**  | <code>string</code> |
+| **`label`** | <code>string</code> |
 
 
 #### JWPlayerMediaTrack
 
 | Prop          | Type                 |
 | ------------- | -------------------- |
-| **`url`**     | <code>string</code>  |
+| **`file`**    | <code>string</code>  |
 | **`label`**   | <code>string</code>  |
 | **`default`** | <code>boolean</code> |
 
