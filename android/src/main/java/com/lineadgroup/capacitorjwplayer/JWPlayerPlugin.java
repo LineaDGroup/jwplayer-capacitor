@@ -88,7 +88,7 @@ public class JWPlayerPlugin extends Plugin implements OptionsProvider {
             @Override
             public void run() {
                 try {
-                    final String videoURL = call.getString("videoURL", "");
+                    final String videoURL = call.getString("file", "");
                     final Integer width = call.getInt("width", 0);
                     final Integer height = call.getInt("height", 0);
                     final Integer x = call.getInt("x", 0);
@@ -202,6 +202,19 @@ public class JWPlayerPlugin extends Plugin implements OptionsProvider {
                 mPlayer.setFullscreen(true, true);
             }
         }
+    }
+
+    @PluginMethod
+    public void getPosition(PluginCall call) {
+        JSObject ret = new JSObject();
+        ret.put("value", mPlayer.getPosition());
+        call.resolve(ret);
+    }
+
+    @PluginMethod
+    public void seek(PluginCall call) {
+        final Double position = call.getDouble("position", 0.0);
+        mPlayer.seek(position);
     }
 
     public int getScaledPixels(float pixels) {
