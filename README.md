@@ -57,12 +57,12 @@ initialize(options: { webLicenseKey?: string; androidLicenseKey?: string; iosLic
 ### create(...)
 
 ```typescript
-create(options: { divId?: string; videoURL: string; posterURL?: string; forceFullScreenOnLandscape?: boolean; x: number; y: number; width: number; height: number; captions?: Array<JWPlayerMediaTrack>; front?: boolean; }) => any
+create(options: { webConfiguration?: { container: string; properties?: any; }; nativeConfiguration?: { videoURL: string; posterURL?: string; forceFullScreenOnLandscape?: boolean; x: number; y: number; width: number; height: number; front?: boolean; }; captions?: JWPlayerMediaTrack[]; }) => any
 ```
 
-| Param         | Type                                                                                                                                                                                               |
-| ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`options`** | <code>{ divId?: string; videoURL: string; posterURL?: string; forceFullScreenOnLandscape?: boolean; x: number; y: number; width: number; height: number; captions?: any; front?: boolean; }</code> |
+| Param         | Type                                                                                                                                                                                                                                                                      |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`options`** | <code>{ webConfiguration?: { container: string; properties?: any; }; nativeConfiguration?: { videoURL: string; posterURL?: string; forceFullScreenOnLandscape?: boolean; x: number; y: number; width: number; height: number; front?: boolean; }; captions?: {}; }</code> |
 
 **Returns:** <code>any</code>
 
@@ -87,7 +87,7 @@ remove() => any
 
 | Prop          | Type                 |
 | ------------- | -------------------- |
-| **`url`**     | <code>string</code>  |
+| **`file`**    | <code>string</code>  |
 | **`label`**   | <code>string</code>  |
 | **`default`** | <code>boolean</code> |
 
