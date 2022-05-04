@@ -88,15 +88,16 @@ public class JWPlayerPlugin extends Plugin implements OptionsProvider {
             @Override
             public void run() {
                 try {
-                    final String videoURL = call.getString("file", "");
-                    final Integer width = call.getInt("width", 0);
-                    final Integer height = call.getInt("height", 0);
-                    final Integer x = call.getInt("x", 0);
-                    final Integer y = call.getInt("y", 0);
-                    GOOGLE_CAST_ID = call.getString("googleCastId", "");
-                    toBack = !call.getBoolean("front", false);
-                    autostart = call.getBoolean("autostart", false);
-                    forceFullScreenOnLandscape = call.getBoolean("forceFullScreenOnLandscape", false);
+                    final JSObject nativeConfiguration = call.getObject("nativeConfiguration", new JSObject());
+                    final String videoURL = nativeConfiguration.getString("file", "");
+                    final Integer width = nativeConfiguration.getInteger("width", 0);
+                    final Integer height = nativeConfiguration.getInteger("height", 0);
+                    final Integer x = nativeConfiguration.getInteger("x", 0);
+                    final Integer y = nativeConfiguration.getInteger("y", 0);
+                    GOOGLE_CAST_ID = nativeConfiguration.getString("googleCastId", "");
+                    toBack = !nativeConfiguration.getBoolean("front", false);
+                    autostart = nativeConfiguration.getBoolean("autostart", false);
+                    forceFullScreenOnLandscape = nativeConfiguration.getBoolean("forceFullScreenOnLandscape", false);
                     if (TextUtils.isEmpty(videoURL)) {
                         call.reject("You have to provide a fileURL to playback");
                         return;
@@ -108,7 +109,7 @@ public class JWPlayerPlugin extends Plugin implements OptionsProvider {
                         for (int i = 0; i < array.length(); i++) {
                             JSONObject data = (JSONObject) array.get(i);
                             Caption captionEn = new Caption.Builder()
-                                    .file((String) data.get("url"))
+                                    .file((String) data.get("file"))
                                     .label((String) data.get("label"))
                                     .kind(CaptionType.CAPTIONS)
                                     .isDefault((Boolean) data.get("default"))

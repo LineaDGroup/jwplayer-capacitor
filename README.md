@@ -17,6 +17,10 @@ npx cap sync
 * [`initialize(...)`](#initialize)
 * [`create(...)`](#create)
 * [`remove()`](#remove)
+* [`getPosition()`](#getposition)
+* [`seek(...)`](#seek)
+* [`addListener(...)`](#addlistener)
+* [`removeAllListeners()`](#removealllisteners)
 * [Interfaces](#interfaces)
 
 </docgen-index>
@@ -42,12 +46,12 @@ echo(options: { value: string; }) => any
 ### initialize(...)
 
 ```typescript
-initialize(options: { webLicenseKey?: string; androidLicenseKey?: string; iosLicenseKey?: string; googleCastId?: string; }) => any
+initialize(options: { webLicenseKey?: string; androidLicenseKey?: string; iosLicenseKey?: string; googleCastId?: string; debug?: boolean; }) => any
 ```
 
-| Param         | Type                                                                                                                |
-| ------------- | ------------------------------------------------------------------------------------------------------------------- |
-| **`options`** | <code>{ webLicenseKey?: string; androidLicenseKey?: string; iosLicenseKey?: string; googleCastId?: string; }</code> |
+| Param         | Type                                                                                                                                 |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **`options`** | <code>{ webLicenseKey?: string; androidLicenseKey?: string; iosLicenseKey?: string; googleCastId?: string; debug?: boolean; }</code> |
 
 **Returns:** <code>any</code>
 
@@ -57,12 +61,12 @@ initialize(options: { webLicenseKey?: string; androidLicenseKey?: string; iosLic
 ### create(...)
 
 ```typescript
-create(options: { webConfiguration?: { container: string; properties?: any; }; nativeConfiguration?: { videoURL: string; posterURL?: string; forceFullScreenOnLandscape?: boolean; x: number; y: number; width: number; height: number; front?: boolean; }; captions?: JWPlayerMediaTrack[]; }) => any
+create(options: { webConfiguration?: { container: string; properties?: any; }; nativeConfiguration?: any; captions?: JWPlayerMediaCaption[]; tracks?: JWPlayerMediaTrack[]; }) => any
 ```
 
-| Param         | Type                                                                                                                                                                                                                                                                      |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`options`** | <code>{ webConfiguration?: { container: string; properties?: any; }; nativeConfiguration?: { videoURL: string; posterURL?: string; forceFullScreenOnLandscape?: boolean; x: number; y: number; width: number; height: number; front?: boolean; }; captions?: {}; }</code> |
+| Param         | Type                                                                                                                                 |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **`options`** | <code>{ webConfiguration?: { container: string; properties?: any; }; nativeConfiguration?: any; captions?: {}; tracks?: {}; }</code> |
 
 **Returns:** <code>any</code>
 
@@ -80,7 +84,76 @@ remove() => any
 --------------------
 
 
+### getPosition()
+
+```typescript
+getPosition() => any
+```
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### seek(...)
+
+```typescript
+seek(options: { position: number; }) => any
+```
+
+| Param         | Type                               |
+| ------------- | ---------------------------------- |
+| **`options`** | <code>{ position: number; }</code> |
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### addListener(...)
+
+```typescript
+addListener(eventName: 'playerEvent', listenerFunc: EventChangeListener) => Promise<PluginListenerHandle> & PluginListenerHandle
+```
+
+Listen for events in player
+
+| Param              | Type                                           |
+| ------------------ | ---------------------------------------------- |
+| **`eventName`**    | <code>"playerEvent"</code>                     |
+| **`listenerFunc`** | <code>(event: JWPlayerEvent) =&gt; void</code> |
+
+**Returns:** <code>any</code>
+
+**Since:** 1.0.0
+
+--------------------
+
+
+### removeAllListeners()
+
+```typescript
+removeAllListeners() => any
+```
+
+Remove all listeners (including the network status changes) for this plugin.
+
+**Returns:** <code>any</code>
+
+**Since:** 1.0.0
+
+--------------------
+
+
 ### Interfaces
+
+
+#### JWPlayerMediaCaption
+
+| Prop        | Type                |
+| ----------- | ------------------- |
+| **`file`**  | <code>string</code> |
+| **`label`** | <code>string</code> |
 
 
 #### JWPlayerMediaTrack
@@ -90,5 +163,12 @@ remove() => any
 | **`file`**    | <code>string</code>  |
 | **`label`**   | <code>string</code>  |
 | **`default`** | <code>boolean</code> |
+
+
+#### PluginListenerHandle
+
+| Prop         | Type                      |
+| ------------ | ------------------------- |
+| **`remove`** | <code>() =&gt; any</code> |
 
 </docgen-api>
