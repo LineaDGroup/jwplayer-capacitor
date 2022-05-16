@@ -38,6 +38,16 @@ export interface JWPlayerPlugin {
       listenerFunc: EventChangeListener,
   ): Promise<PluginListenerHandle> & PluginListenerHandle;
 
+  addListener(
+      eventName: 'fullScreenPlayerEvent',
+      listenerFunc: EventChangeListener,
+  ): Promise<PluginListenerHandle> & PluginListenerHandle;
+
+  addListener(
+      eventName: 'readyPlayerEvent',
+      listenerFunc: EventChangeListener,
+  ): Promise<PluginListenerHandle> & PluginListenerHandle;
+
   /**
    * Remove all listeners (including the network status changes) for this plugin.
    *

@@ -20,6 +20,8 @@ npx cap sync
 * [`getPosition()`](#getposition)
 * [`seek(...)`](#seek)
 * [`addListener(...)`](#addlistener)
+* [`addListener(...)`](#addlistener)
+* [`addListener(...)`](#addlistener)
 * [`removeAllListeners()`](#removealllisteners)
 * [Interfaces](#interfaces)
 
@@ -126,6 +128,38 @@ Listen for events in player
 **Returns:** <code>any</code>
 
 **Since:** 1.0.0
+
+--------------------
+
+
+### addListener(...)
+
+```typescript
+addListener(eventName: 'fullScreenPlayerEvent', listenerFunc: EventChangeListener) => Promise<PluginListenerHandle> & PluginListenerHandle
+```
+
+| Param              | Type                                           |
+| ------------------ | ---------------------------------------------- |
+| **`eventName`**    | <code>"fullScreenPlayerEvent"</code>           |
+| **`listenerFunc`** | <code>(event: JWPlayerEvent) =&gt; void</code> |
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### addListener(...)
+
+```typescript
+addListener(eventName: 'readyPlayerEvent', listenerFunc: EventChangeListener) => Promise<PluginListenerHandle> & PluginListenerHandle
+```
+
+| Param              | Type                                           |
+| ------------------ | ---------------------------------------------- |
+| **`eventName`**    | <code>"readyPlayerEvent"</code>                |
+| **`listenerFunc`** | <code>(event: JWPlayerEvent) =&gt; void</code> |
+
+**Returns:** <code>any</code>
 
 --------------------
 

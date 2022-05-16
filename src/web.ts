@@ -65,6 +65,20 @@ export class JWPlayerWeb extends WebPlugin implements JWPlayerPlugin {
   }
 
   private loadEvents(){
+    this.playerInstance.on('ready', (eventData: any) => {
+      const event : JWPlayerEvent = {
+        name: 'readyPlayerEvent',
+        data: eventData
+      };
+      this.notifyListeners('readyPlayerEvent', event);
+    });
+    this.playerInstance.on('fullscreen', (eventData: any) => {
+      const event : JWPlayerEvent = {
+        name: 'fullScreenPlayerEvent',
+        data: eventData
+      };
+      this.notifyListeners('fullScreenPlayerEvent', event);
+    });
     this.playerInstance.on('play', (eventData: any) => {
       const event : JWPlayerEvent = {
         name: 'play',
