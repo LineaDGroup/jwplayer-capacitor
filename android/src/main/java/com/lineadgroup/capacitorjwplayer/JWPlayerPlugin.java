@@ -2,6 +2,7 @@ package com.lineadgroup.capacitorjwplayer;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.text.TextUtils;
@@ -17,13 +18,18 @@ import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 import com.getcapacitor.annotation.Permission;
 import com.google.android.gms.cast.LaunchOptions;
+import com.google.android.gms.cast.framework.CastContext;
 import com.google.android.gms.cast.framework.CastOptions;
 import com.google.android.gms.cast.framework.OptionsProvider;
+import com.google.android.gms.cast.framework.SessionManager;
 import com.google.android.gms.cast.framework.SessionProvider;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.jwplayer.pub.api.configuration.PlayerConfig;
 import com.jwplayer.pub.api.events.EventListener;
 import com.jwplayer.pub.api.events.EventType;
 import com.jwplayer.pub.api.events.FullscreenEvent;
+import com.jwplayer.pub.api.events.PlayEvent;
 import com.jwplayer.pub.api.events.ReadyEvent;
 import com.jwplayer.pub.api.events.listeners.VideoPlayerEvents;
 import com.jwplayer.pub.api.license.LicenseUtil;
@@ -48,7 +54,8 @@ import java.util.Map;
       alias = "storage"
     )
   })
-public class JWPlayerPlugin extends Plugin implements OptionsProvider {
+public class JWPlayerPlugin extends Plugin {
+
 
   private JWPlayer implementation = new JWPlayer();
   private JWPlayerView jwPlayerView = null;
@@ -63,6 +70,7 @@ public class JWPlayerPlugin extends Plugin implements OptionsProvider {
   public static final String JWPLAYER_CHANGE_EVENT = "playerEvent";
   public static final String JWPLAYER_FULL_SCREEN_EVENT = "fullScreenPlayerEvent";
   public static final String JWPLAYER_READY_EVENT = "readyPlayerEvent";
+  private CastContext mCastContext;
 
   @PluginMethod
   public void echo(PluginCall call) {
@@ -161,7 +169,7 @@ public class JWPlayerPlugin extends Plugin implements OptionsProvider {
           playlist.add(playlistItem);
           PlayerConfig config = new PlayerConfig.Builder()
             .playlist(playlist)
-            .autostart(autostart)
+            .autostart(false)
             .build();
           mPlayer.setup(config);
           mPlayer.addListener(EventType.READY, new VideoPlayerEvents.OnReadyListener() {
@@ -195,11 +203,13 @@ public class JWPlayerPlugin extends Plugin implements OptionsProvider {
     bridge.getActivity().runOnUiThread(new Runnable() {
       @Override
       public void run() {
+        CastContext castContext = CastContext.getSharedInstance(bridge.getActivity());
+        SessionManager mSessionManager = castContext.getSessionManager();
+        mSessionManager.endCurrentSession(true);
         FrameLayout containerView = getBridge().getActivity().findViewById(containerViewId);
 
         // allow orientation changes after closing camera:
         //getBridge().getActivity().setRequ estedOrientation(previousOrientationRequest);
-
         if (containerView != null) {
           mPlayer.stop();
           containerView.removeAllViews();
@@ -241,8 +251,14 @@ public class JWPlayerPlugin extends Plugin implements OptionsProvider {
   @PluginMethod
   public void seek(PluginCall call) {
     final Double position = call.getDouble("position", 0.0);
-    mPlayer.seek(position);
-
+    mPlayer.play();
+    mPlayer.addListener(EventType.PLAY, new VideoPlayerEvents.OnPlayListener() {
+      @Override
+      public void onPlay(PlayEvent playEvent) {
+        mPlayer.seek(position);
+        mPlayer.removeListener(EventType.PLAY, this);
+      }
+    });
   }
 
   public int getScaledPixels(float pixels) {
@@ -252,21 +268,6 @@ public class JWPlayerPlugin extends Plugin implements OptionsProvider {
     return (int) (pixels * scale + 0.5f);
   }
 
-  @Override
-  public CastOptions getCastOptions(Context context) {
-    LaunchOptions launchOptions = new LaunchOptions.Builder()
-      .setLocale(Locale.US)
-      .build();
-    if (GOOGLE_CAST_ID != null && !GOOGLE_CAST_ID.isEmpty()) {
-      CastOptions castOptions = new CastOptions.Builder()
-        .setReceiverApplicationId(GOOGLE_CAST_ID)
-        .setLaunchOptions(launchOptions).build();
-
-      return castOptions;
-    }
-    return new CastOptions.Builder().setLaunchOptions(launchOptions).build();
-  }
-
   private JSObject getStatusJSObject(String name, Object data) {
     JSObject ret = new JSObject();
     ret.put("name", name);
@@ -274,8 +275,4 @@ public class JWPlayerPlugin extends Plugin implements OptionsProvider {
     return ret;
   }
 
-  @Override
-  public List<SessionProvider> getAdditionalSessionProviders(Context context) {
-    return null;
-  }
 }
