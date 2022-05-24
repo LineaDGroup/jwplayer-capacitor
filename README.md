@@ -19,6 +19,9 @@ npx cap sync
 * [`remove()`](#remove)
 * [`getPosition()`](#getposition)
 * [`seek(...)`](#seek)
+* [`addButton(...)`](#addbutton)
+* [`addListener(...)`](#addlistener)
+* [`addListener(...)`](#addlistener)
 * [`addListener(...)`](#addlistener)
 * [`removeAllListeners()`](#removealllisteners)
 * [Interfaces](#interfaces)
@@ -110,6 +113,23 @@ seek(options: { position: number; }) => any
 --------------------
 
 
+### addButton(...)
+
+```typescript
+addButton(img: string, tooltip: string, callback: () => void, id: string, btnClass: string) => void
+```
+
+| Param          | Type                       |
+| -------------- | -------------------------- |
+| **`img`**      | <code>string</code>        |
+| **`tooltip`**  | <code>string</code>        |
+| **`callback`** | <code>() =&gt; void</code> |
+| **`id`**       | <code>string</code>        |
+| **`btnClass`** | <code>string</code>        |
+
+--------------------
+
+
 ### addListener(...)
 
 ```typescript
@@ -126,6 +146,38 @@ Listen for events in player
 **Returns:** <code>any</code>
 
 **Since:** 1.0.0
+
+--------------------
+
+
+### addListener(...)
+
+```typescript
+addListener(eventName: 'fullScreenPlayerEvent', listenerFunc: EventChangeListener) => Promise<PluginListenerHandle> & PluginListenerHandle
+```
+
+| Param              | Type                                           |
+| ------------------ | ---------------------------------------------- |
+| **`eventName`**    | <code>"fullScreenPlayerEvent"</code>           |
+| **`listenerFunc`** | <code>(event: JWPlayerEvent) =&gt; void</code> |
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### addListener(...)
+
+```typescript
+addListener(eventName: 'readyPlayerEvent', listenerFunc: EventChangeListener) => Promise<PluginListenerHandle> & PluginListenerHandle
+```
+
+| Param              | Type                                           |
+| ------------------ | ---------------------------------------------- |
+| **`eventName`**    | <code>"readyPlayerEvent"</code>                |
+| **`listenerFunc`** | <code>(event: JWPlayerEvent) =&gt; void</code> |
+
+**Returns:** <code>any</code>
 
 --------------------
 

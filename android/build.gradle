@@ -66,6 +66,7 @@ dependencies {
     implementation "com.jwplayer:jwplayer-chromecast:$jwPlayerVersion"
     implementation "com.jwplayer:jwplayer-ima:$jwPlayerVersion"
     implementation 'com.google.android.gms:play-services-cast-framework:19.0.0'
+
     // ExoPlayer dependencies
     implementation "com.google.android.exoplayer:exoplayer-core:$exoplayerVersion"
     implementation "com.google.android.exoplayer:exoplayer-dash:$exoplayerVersion"
