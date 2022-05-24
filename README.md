@@ -19,6 +19,7 @@ npx cap sync
 * [`remove()`](#remove)
 * [`getPosition()`](#getposition)
 * [`seek(...)`](#seek)
+* [`addButton(...)`](#addbutton)
 * [`addListener(...)`](#addlistener)
 * [`addListener(...)`](#addlistener)
 * [`addListener(...)`](#addlistener)
@@ -108,6 +109,23 @@ seek(options: { position: number; }) => any
 | **`options`** | <code>{ position: number; }</code> |
 
 **Returns:** <code>any</code>
+
+--------------------
+
+
+### addButton(...)
+
+```typescript
+addButton(img: string, tooltip: string, callback: () => void, id: string, btnClass: string) => void
+```
+
+| Param          | Type                       |
+| -------------- | -------------------------- |
+| **`img`**      | <code>string</code>        |
+| **`tooltip`**  | <code>string</code>        |
+| **`callback`** | <code>() =&gt; void</code> |
+| **`id`**       | <code>string</code>        |
+| **`btnClass`** | <code>string</code>        |
 
 --------------------
 
