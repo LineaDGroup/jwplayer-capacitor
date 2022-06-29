@@ -197,6 +197,14 @@ public class JWPlayerPlugin extends Plugin {
     call.resolve();
   }
 
+  @PluginMethod()
+  public void addButton(final PluginCall call) {
+
+  }
+
+  @PluginMethod()
+  public void addCuePoints(final PluginCall call){
+  }
 
   @PluginMethod()
   public void remove(final PluginCall call) {

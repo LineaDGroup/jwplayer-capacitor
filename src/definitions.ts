@@ -11,6 +11,13 @@ export interface JWPlayerMediaCaption {
     label: string;
 }
 
+export interface JWPlayerCuePoint {
+    type: string;
+    text: string;
+    begin: number;
+}
+
+
 export interface JWPlayerPlugin {
     echo(options: { value: string }): Promise<{ value: string }>;
 
@@ -33,6 +40,8 @@ export interface JWPlayerPlugin {
     seek(options: { position: number }): Promise<any>;
 
     addButton(img: string, tooltip: string, callback: () => void, id: string, btnClass: string): void;
+
+    addCuePoints( cuePoint: JWPlayerCuePoint[]): void;
 
     /**
      * Listen for events in player

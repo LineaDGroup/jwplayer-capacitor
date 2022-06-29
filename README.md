@@ -20,6 +20,7 @@ npx cap sync
 * [`getPosition()`](#getposition)
 * [`seek(...)`](#seek)
 * [`addButton(...)`](#addbutton)
+* [`addCuePoints(...)`](#addcuepoints)
 * [`addListener(...)`](#addlistener)
 * [`addListener(...)`](#addlistener)
 * [`addListener(...)`](#addlistener)
@@ -130,6 +131,19 @@ addButton(img: string, tooltip: string, callback: () => void, id: string, btnCla
 --------------------
 
 
+### addCuePoints(...)
+
+```typescript
+addCuePoints(cuePoint: JWPlayerCuePoint[]) => void
+```
+
+| Param          | Type            |
+| -------------- | --------------- |
+| **`cuePoint`** | <code>{}</code> |
+
+--------------------
+
+
 ### addListener(...)
 
 ```typescript
@@ -215,6 +229,15 @@ Remove all listeners (including the network status changes) for this plugin.
 | **`file`**    | <code>string</code>  |
 | **`label`**   | <code>string</code>  |
 | **`default`** | <code>boolean</code> |
+
+
+#### JWPlayerCuePoint
+
+| Prop        | Type                |
+| ----------- | ------------------- |
+| **`type`**  | <code>string</code> |
+| **`text`**  | <code>string</code> |
+| **`begin`** | <code>number</code> |
 
 
 #### PluginListenerHandle

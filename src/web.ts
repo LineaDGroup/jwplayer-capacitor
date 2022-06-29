@@ -1,6 +1,6 @@
 import {WebPlugin} from '@capacitor/core';
 
-import type {JWPlayerMediaTrack} from '.';
+import type {JWPlayerCuePoint, JWPlayerMediaTrack} from '.';
 import type {JWPlayerPlugin, JWPlayerEvent} from './definitions';
 
 declare let jwplayer: any;
@@ -142,6 +142,13 @@ export class JWPlayerWeb extends WebPlugin implements JWPlayerPlugin {
             };
             this.notifyListeners('playerEvent', event);
         });
+        this.playerInstance.on('time', (eventData: any) => {
+            const event: JWPlayerEvent = {
+                name: 'time',
+                data: eventData
+            };
+            this.notifyListeners('playerEvent', event);
+        });
     }
 
     getPosition(): Promise<{ value: number }> {
@@ -153,6 +160,11 @@ export class JWPlayerWeb extends WebPlugin implements JWPlayerPlugin {
 
     seek(options: { position: number }): Promise<any> {
         this.playerInstance.seek(options.position);
+        return Promise.resolve(true);
+    }
+
+    addCuePoints(cuePoints: JWPlayerCuePoint[]) {
+        this.playerInstance.addCues(cuePoints);
         return Promise.resolve(true);
     }
 
