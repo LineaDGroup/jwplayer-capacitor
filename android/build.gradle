@@ -3,8 +3,8 @@ ext {
     androidxAppCompatVersion = project.hasProperty('androidxAppCompatVersion') ? rootProject.ext.androidxAppCompatVersion : '1.2.0'
     androidxJunitVersion = project.hasProperty('androidxJunitVersion') ? rootProject.ext.androidxJunitVersion : '1.1.2'
     androidxEspressoCoreVersion = project.hasProperty('androidxEspressoCoreVersion') ? rootProject.ext.androidxEspressoCoreVersion : '3.3.0'
-    jwPlayerVersion = project.hasProperty('jwPlayerVersion') ? rootProject.ext.jwPlayerVersion : '4.0.0'
-    exoplayerVersion = project.hasProperty('exoplayerVersion') ? rootProject.ext.exoplayerVersion : '2.14.0'
+    jwPlayerVersion = project.hasProperty('jwPlayerVersion') ? rootProject.ext.jwPlayerVersion : '4.5.1'
+    exoplayerVersion = project.hasProperty('exoplayerVersion') ? rootProject.ext.exoplayerVersion : '2.16.1'
 }
 
 buildscript {

@@ -21,6 +21,7 @@ npx cap sync
 * [`seek(...)`](#seek)
 * [`addButton(...)`](#addbutton)
 * [`addCuePoints(...)`](#addcuepoints)
+* [`playlistItem(...)`](#playlistitem)
 * [`addListener(...)`](#addlistener)
 * [`addListener(...)`](#addlistener)
 * [`addListener(...)`](#addlistener)
@@ -65,12 +66,12 @@ initialize(options: { webLicenseKey?: string; androidLicenseKey?: string; iosLic
 ### create(...)
 
 ```typescript
-create(options: { webConfiguration?: { container: string; properties?: any; }; nativeConfiguration?: any; captions?: JWPlayerMediaCaption[]; tracks?: JWPlayerMediaTrack[]; }) => any
+create(options: { webConfiguration?: { container: string; properties?: any; }; nativeConfiguration?: JWPlayerNativeConfiguration; }) => any
 ```
 
-| Param         | Type                                                                                                                                 |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| **`options`** | <code>{ webConfiguration?: { container: string; properties?: any; }; nativeConfiguration?: any; captions?: {}; tracks?: {}; }</code> |
+| Param         | Type                                                                                                                                                                        |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`options`** | <code>{ webConfiguration?: { container: string; properties?: any; }; nativeConfiguration?: <a href="#jwplayernativeconfiguration">JWPlayerNativeConfiguration</a>; }</code> |
 
 **Returns:** <code>any</code>
 
@@ -134,12 +135,27 @@ addButton(img: string, tooltip: string, callback: () => void, id: string, btnCla
 ### addCuePoints(...)
 
 ```typescript
-addCuePoints(cuePoint: JWPlayerCuePoint[]) => void
+addCuePoints(options: { cuePoints: JWPlayerCuePoint[]; }) => void
 ```
 
-| Param          | Type            |
-| -------------- | --------------- |
-| **`cuePoint`** | <code>{}</code> |
+| Param         | Type                            |
+| ------------- | ------------------------------- |
+| **`options`** | <code>{ cuePoints: {}; }</code> |
+
+--------------------
+
+
+### playlistItem(...)
+
+```typescript
+playlistItem(options: { index: number; }) => any
+```
+
+| Param         | Type                            |
+| ------------- | ------------------------------- |
+| **`options`** | <code>{ index: number; }</code> |
+
+**Returns:** <code>any</code>
 
 --------------------
 
@@ -214,21 +230,20 @@ Remove all listeners (including the network status changes) for this plugin.
 ### Interfaces
 
 
-#### JWPlayerMediaCaption
+#### JWPlayerNativeConfiguration
 
-| Prop        | Type                |
-| ----------- | ------------------- |
-| **`file`**  | <code>string</code> |
-| **`label`** | <code>string</code> |
-
-
-#### JWPlayerMediaTrack
-
-| Prop          | Type                 |
-| ------------- | -------------------- |
-| **`file`**    | <code>string</code>  |
-| **`label`**   | <code>string</code>  |
-| **`default`** | <code>boolean</code> |
+| Prop                             | Type                 |
+| -------------------------------- | -------------------- |
+| **`width`**                      | <code>number</code>  |
+| **`height`**                     | <code>number</code>  |
+| **`x`**                          | <code>number</code>  |
+| **`y`**                          | <code>number</code>  |
+| **`googleCastId`**               | <code>string</code>  |
+| **`front`**                      | <code>boolean</code> |
+| **`autostart`**                  | <code>boolean</code> |
+| **`forceFullScreenOnLandscape`** | <code>boolean</code> |
+| **`forceFullScreen`**            | <code>boolean</code> |
+| **`playlist`**                   | <code>{}</code>      |
 
 
 #### JWPlayerCuePoint
