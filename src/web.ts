@@ -1,6 +1,6 @@
 import {WebPlugin} from '@capacitor/core';
 
-import type {JWPlayerMediaTrack} from '.';
+import type {JWPlayerCuePoint} from '.';
 import type {JWPlayerPlugin, JWPlayerEvent} from './definitions';
 
 declare let jwplayer: any;
@@ -32,31 +32,17 @@ export class JWPlayerWeb extends WebPlugin implements JWPlayerPlugin {
         return true;
     }
 
-    async create(options: { webConfiguration?: { container: string; properties?: any }; captions?: JWPlayerMediaTrack[] }): Promise<any> {
+    async create(options: { webConfiguration?: { container: string; properties?: any }}): Promise<any> {
         if (this.isInit && options.webConfiguration) {
             if (this.playerInstance === undefined) {
                 this.playerInstance = jwplayer(options.webConfiguration!.container);
                 this.playerInstance.setup({
                     ...options.webConfiguration!.properties ?? {},
-                    'tracks': options.captions?.map(item => {
-                        return {
-                            'kind': 'captions',
-                            'file': item.file,
-                            'label': item.label,
-                        };
-                    }),
                 });
                 this.loadEvents();
             } else {
                 this.playerInstance.load({
                         ...options.webConfiguration!.properties ?? {},
-                        'tracks': options.captions?.map(item => {
-                            return {
-                                'kind': 'captions',
-                                'file': item.file,
-                                'label': item.label,
-                            };
-                        }),
                     },
                 );
             }
@@ -142,6 +128,27 @@ export class JWPlayerWeb extends WebPlugin implements JWPlayerPlugin {
             };
             this.notifyListeners('playerEvent', event);
         });
+        this.playerInstance.on('time', (eventData: any) => {
+            const event: JWPlayerEvent = {
+                name: 'time',
+                data: eventData
+            };
+            this.notifyListeners('playerEvent', event);
+        });
+        this.playerInstance.on('playlistItem', (eventData: any) => {
+            const event: JWPlayerEvent = {
+                name: 'playlistItem',
+                data: eventData
+            };
+            this.notifyListeners('playerEvent', event);
+        });
+        this.playerInstance.on('playlistComplete', (eventData: any) => {
+            const event: JWPlayerEvent = {
+                name: 'playlistComplete',
+                data: eventData
+            };
+            this.notifyListeners('playerEvent', event);
+        });
     }
 
     getPosition(): Promise<{ value: number }> {
@@ -156,7 +163,20 @@ export class JWPlayerWeb extends WebPlugin implements JWPlayerPlugin {
         return Promise.resolve(true);
     }
 
+    addCuePoints(options: { cuePoints: JWPlayerCuePoint[] }) {
+        this.playerInstance.addCues(options.cuePoints);
+        return Promise.resolve(true);
+    }
+
     addButton(img: string, tooltip: string, callback: () => void, id: string, btnClass: string): void {
         this.playerInstance.addButton(img, tooltip, callback, id, btnClass);
     }
+
+    playlistItem(options: { index: number }): Promise<any> {
+        this.playerInstance.playlistItem(options.index);
+        return Promise.resolve(true);
+    }
+
+
+
 }

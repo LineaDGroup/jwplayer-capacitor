@@ -11,6 +11,37 @@ export interface JWPlayerMediaCaption {
     label: string;
 }
 
+export interface JWPlayerCuePoint {
+    type: string;
+    text: string;
+    begin: number;
+}
+
+export interface JWPlayerNativeConfiguration {
+    width: number;
+    height: number;
+    x: number;
+    y: number;
+    googleCastId?: string;
+    front?: boolean;
+    autostart?: boolean;
+    forceFullScreenOnLandscape?: boolean;
+    forceFullScreen?: boolean;
+    playlist: {
+        file: string
+        image: string;
+        title: string;
+        description: string;
+        starttime: number;
+        captions: {
+            file: string;
+            label: string;
+            default?: boolean;
+        }[]
+    }[]
+}
+
+
 export interface JWPlayerPlugin {
     echo(options: { value: string }): Promise<{ value: string }>;
 
@@ -21,9 +52,7 @@ export interface JWPlayerPlugin {
             container: string,
             properties?: any,
         }
-        nativeConfiguration?: any,
-        captions?: JWPlayerMediaCaption[],
-        tracks?: JWPlayerMediaTrack[]
+        nativeConfiguration?: JWPlayerNativeConfiguration,
     }): Promise<any>;
 
     remove(): Promise<any>;
@@ -33,6 +62,10 @@ export interface JWPlayerPlugin {
     seek(options: { position: number }): Promise<any>;
 
     addButton(img: string, tooltip: string, callback: () => void, id: string, btnClass: string): void;
+
+    addCuePoints(options: { cuePoints: JWPlayerCuePoint[] }): void;
+
+    playlistItem(options: { index: number }): Promise<any>;
 
     /**
      * Listen for events in player
