@@ -8,4 +8,8 @@ CAP_PLUGIN(JWPlayerPlugin, "JWPlayer",
            CAP_PLUGIN_METHOD(initialize, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(create, CAPPluginReturnPromise);
            CAP_PLUGIN_METHOD(remove, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(addButton, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(addCuePoints, CAPPluginReturnPromise);
+           CAP_PLUGIN_METHOD(getPosition, CAPPluginReturnPromise);
+
            )
