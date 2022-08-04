@@ -1,6 +1,6 @@
 {
   "name": "jwplayer-capacitor",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Integration of JWPlayer Web and Mobile SDKs with Capacitor",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
@@ -14,6 +14,7 @@
     "JwplayerCapacitor.podspec"
   ],
   "author": "Eduardo Metzger",
+  "contributors": ["Andres Diaz andresdkm@gmail.com"],
   "license": "MIT",
   "repository": {
     "type": "git",
