@@ -2,6 +2,7 @@ import Foundation
 import Capacitor
 import JWPlayerKit
 import GoogleCast
+import UIKit
 
 /**
  * Please read the Capacitor iOS Plugin Development Guide
@@ -9,14 +10,15 @@ import GoogleCast
  */
 @objc(JWPlayerPlugin)
 public class JWPlayerPlugin: CAPPlugin {
-    
-    
+
+
     private let implementation = JWPlayer()
     var JWPLAYER_KEY: String = "";
     var GOOGLE_CAST_ID : String?
     private var playerViewController : PluginViewController?
     private var castController : JWCastController?
     private var isFront = false
+    private var progressView: UIView = UIView()
 
 
     @objc func echo(_ call: CAPPluginCall) {
@@ -24,6 +26,35 @@ public class JWPlayerPlugin: CAPPlugin {
         call.resolve([
             "value": implementation.echo(value)
         ])
+    }
+
+
+    func showProgress(){
+        DispatchQueue.main.async {
+            var spinner = UIActivityIndicatorView(style: .whiteLarge)
+            self.progressView.backgroundColor = UIColor(white: 0, alpha: 1)
+            spinner.translatesAutoresizingMaskIntoConstraints = false
+            spinner.startAnimating()
+            self.progressView.addSubview(spinner)
+            self.progressView.center = (self.webView?.superview!.center)!
+            self.progressView.frame = CGRect(
+                x: 0,
+                y: 0,
+                width: (self.bridge?.viewController?.view.frame.width)!,
+                height: (self.bridge?.viewController?.view.frame.height)!
+            )
+
+            spinner.centerXAnchor.constraint(equalTo: self.progressView.centerXAnchor).isActive = true
+            spinner.centerYAnchor.constraint(equalTo: self.progressView.centerYAnchor).isActive = true
+
+            self.bridge?.webView?.superview!.addSubview(self.progressView)
+            self.bridge?.webView?.superview!.superview?.bringSubviewToFront(self.progressView)
+
+            //let value = UIInterfaceOrientation.landscapeLeft.rawValue
+            //UIDevice.current.setValue(value, forKey: "orientation")
+
+        }
+
     }
 
     @objc func initialize(_ call: CAPPluginCall) {
@@ -40,6 +71,7 @@ public class JWPlayerPlugin: CAPPlugin {
             let options = GCKCastOptions(discoveryCriteria: discoveryCriteria)
             GCKCastContext.setSharedInstanceWith(options)
         }
+        showProgress()
         call.resolve([
             "initialized": true
         ])
@@ -49,7 +81,9 @@ public class JWPlayerPlugin: CAPPlugin {
     @objc func remove(_ call: CAPPluginCall){
         DispatchQueue.main.async {
             if self.playerViewController != nil {
-                //self.webView?.superview?.willRemoveSubview(self.playerViewController!.view)
+                self.playerViewController?.player.stop()
+                self.bridge?.viewController?.view.sendSubviewToBack(self.playerViewController!.view)
+                self.webView?.superview?.willRemoveSubview(self.playerViewController!.view)
                 self.playerViewController!.view.removeFromSuperview()
                 self.playerViewController!.removeFromParent()
                 self.playerViewController!.view = nil
@@ -153,7 +187,7 @@ public class JWPlayerPlugin: CAPPlugin {
                         height: (self.bridge?.viewController?.view.frame.height)!
                     )
                     if forceFullScreenOnLandscape {
-                        // self.playerViewController!.forceFullScreenOnLandscape = true
+                        self.playerViewController!.forceFullScreenOnLandscape = true
                         self.playerViewController!.forceLandscapeOnFullScreen = true
                     }
                     if forceFullScreen {
@@ -181,15 +215,18 @@ public class JWPlayerPlugin: CAPPlugin {
                         self.webView?.superview?.bringSubviewToFront(self.webView!)
                         // self.bridge?.viewController?.view.superview?.bringSubviewToFront((self.bridge?.viewController?.view)!)
                     } else{
-                        self.bridge?.viewController?.view.addSubview(self.playerViewController!.view)
+                        self.bridge?.webView!.addSubview(self.playerViewController!.view)
                         self.bridge?.viewController?.addChild(self.playerViewController!)
-                        self.playerViewController!.didMove(toParent: self.bridge?.viewController?.parent)
+                        //self.playerViewController!.didMove(toParent: self.bridge?.viewController?.parent)
                     }
 
                     if self.GOOGLE_CAST_ID != nil && !(self.GOOGLE_CAST_ID?.isEmpty ?? false) {
                         self.setUpCastController()
                     }
+                    self.progressView.removeFromSuperview()
+                    self.progressView.superview?.removeFromSuperview()
                     self.notifyListeners("onJWPlayerReady", data: nil)
+                    self.playerViewController?.transitionToFullScreen(animated: true)
                 }
             }catch let error as NSError {
                 print("Fail: \(error.localizedDescription)")
