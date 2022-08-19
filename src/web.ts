@@ -16,6 +16,7 @@ export class JWPlayerWeb extends WebPlugin implements JWPlayerPlugin {
         if (options.webLicenseKey) {
             jwplayer.key = options.webLicenseKey;
             jwplayer.debug = options.debug;
+            window.screen.orientation.lock('landscape');
         } else {
             console.error('Jwplayer does not have a key', options);
         }
@@ -25,6 +26,7 @@ export class JWPlayerWeb extends WebPlugin implements JWPlayerPlugin {
         if (this.playerInstance) {
             await this.playerInstance!.remove();
             this.playerInstance = undefined;
+            window.screen.orientation.lock('portrait');
         }
         return true;
     }
