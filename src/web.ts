@@ -1,6 +1,6 @@
 import {WebPlugin} from '@capacitor/core';
 
-import type {JWPlayerCuePoint} from '.';
+import type {JWPlayerCuePoint,JWPlayerAd} from '.';
 import type {JWPlayerPlugin, JWPlayerEvent} from './definitions';
 
 declare let jwplayer: any;
@@ -31,12 +31,23 @@ export class JWPlayerWeb extends WebPlugin implements JWPlayerPlugin {
         return true;
     }
 
-    async create(options: { webConfiguration?: { container: string; properties?: any }}): Promise<any> {
+    async create(options: { webConfiguration?: { container: string; properties?: any }, advertisingConfig?: JWPlayerAd }): Promise<any> {
         if (options.webConfiguration) {
             this.playerInstance = jwplayer(options.webConfiguration!.container);
-            this.playerInstance.setup({
+            const config = {
                 ...options.webConfiguration!.properties ?? {},
-            });
+            };
+            if (options.advertisingConfig) {
+                config.advertising = {
+                    client: options.advertisingConfig.type == 'vast' ? 'vast' : 'googima',
+                    schedule: options.advertisingConfig.schedule.map(c => {
+                        return {
+                            offset: c.begin, tag: c.url
+                        }
+                    })
+                }
+            }
+            this.playerInstance.setup(config);
             this.loadEvents();
         }
     }
@@ -154,9 +165,8 @@ export class JWPlayerWeb extends WebPlugin implements JWPlayerPlugin {
         return Promise.resolve(true);
     }
 
-    addCuePoints(options: { cuePoints: JWPlayerCuePoint[] }) {
+    addCuePoints(options: { cuePoints: JWPlayerCuePoint[] }): void{
         this.playerInstance.addCues(options.cuePoints);
-        return Promise.resolve(true);
     }
 
     addButton(img: string, tooltip: string, callback: () => void, id: string, btnClass: string): void {
@@ -167,7 +177,6 @@ export class JWPlayerWeb extends WebPlugin implements JWPlayerPlugin {
         this.playerInstance.playlistItem(options.index);
         return Promise.resolve(true);
     }
-
 
 
 }

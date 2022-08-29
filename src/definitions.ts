@@ -17,6 +17,16 @@ export interface JWPlayerCuePoint {
     begin: number;
 }
 
+export interface JWPlayerAdSchedule {
+    url: string;
+    begin: number;
+}
+
+export interface JWPlayerAd {
+    type: string;
+    schedule: JWPlayerAdSchedule[];
+}
+
 export interface JWPlayerNativeConfiguration {
     width: number;
     height: number;
@@ -53,6 +63,7 @@ export interface JWPlayerPlugin {
             properties?: any,
         }
         nativeConfiguration?: JWPlayerNativeConfiguration,
+        advertisingConfig?: JWPlayerAd
     }): Promise<any>;
 
     remove(): Promise<any>;

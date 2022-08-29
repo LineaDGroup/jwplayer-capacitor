@@ -37,6 +37,9 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.jwplayer.pub.api.configuration.PlayerConfig;
 import com.jwplayer.pub.api.configuration.RelatedConfig;
+import com.jwplayer.pub.api.configuration.ads.AdvertisingConfig;
+import com.jwplayer.pub.api.configuration.ads.VastAdvertisingConfig;
+import com.jwplayer.pub.api.configuration.ads.ima.ImaAdvertisingConfig;
 import com.jwplayer.pub.api.events.CaptionsChangedEvent;
 import com.jwplayer.pub.api.events.CaptionsListEvent;
 import com.jwplayer.pub.api.events.CompleteEvent;
@@ -56,6 +59,7 @@ import com.jwplayer.pub.api.events.TimeEvent;
 import com.jwplayer.pub.api.events.listeners.VideoPlayerEvents;
 import com.jwplayer.pub.api.fullscreen.FullscreenHandler;
 import com.jwplayer.pub.api.license.LicenseUtil;
+import com.jwplayer.pub.api.media.ads.AdBreak;
 import com.jwplayer.pub.api.media.captions.Caption;
 import com.jwplayer.pub.api.media.captions.CaptionType;
 import com.jwplayer.pub.api.media.playlists.PlaylistItem;
@@ -159,8 +163,7 @@ public class JWPlayerPlugin extends Plugin {
   }
 
 
-
-  private void removeProgress(){
+  private void removeProgress() {
     RelativeLayout relativeLayout = getBridge().getActivity().findViewById(grayViewBackId);
     if (relativeLayout != null) {
       relativeLayout.removeAllViews();
@@ -199,6 +202,7 @@ public class JWPlayerPlugin extends Plugin {
           autostart = nativeConfiguration.getBoolean("autostart", false);
           forceFullScreenOnLandscape = nativeConfiguration.getBoolean("forceFullScreenOnLandscape", false);
           forceFullScreen = nativeConfiguration.getBoolean("forceFullScreen", false);
+          final JSObject advertisingConfigObject = call.getObject("advertisingConfig", new JSObject());
 
           List<PlaylistItem> playlist = new ArrayList<>();
           JSONArray playList = nativeConfiguration.getJSONArray("playlist");
@@ -237,17 +241,24 @@ public class JWPlayerPlugin extends Plugin {
           }
           jwPlayerView = new JWPlayerView(getBridge().getContext());
           mPlayer = jwPlayerView.getPlayer();
+
+          Log.i("PLAYER/Advertising", "generating advertising");
+
+
           FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(width == 0 ? FrameLayout.LayoutParams.MATCH_PARENT : getScaledPixels(width), height == 0 ? FrameLayout.LayoutParams.MATCH_PARENT : getScaledPixels(height));
           lp.topMargin = getScaledPixels(y);
           lp.leftMargin = getScaledPixels(x);
 
           jwPlayerView.setLayoutParams(lp);
-          PlayerConfig config = new PlayerConfig.Builder()
+          PlayerConfig.Builder config = new PlayerConfig.Builder()
             .playlist(playlist)
-            .autostart(autostart)
-            .build();
+            .autostart(autostart);
+          AdvertisingConfig advertisingConfig = generateAdConfiguration(advertisingConfigObject);
+          if (advertisingConfig != null) {
+            config.advertisingConfig(advertisingConfig);
+          }
           mPlayer.setFullscreenHandler(new FullScreenHandler_NoRotation(jwPlayerView));
-          mPlayer.setup(config);
+          mPlayer.setup(config.build());
           if (forceFullScreen) {
             mPlayer.setFullscreen(true, false);
           }
@@ -263,7 +274,7 @@ public class JWPlayerPlugin extends Plugin {
           mPlayer.addListener(EventType.ERROR, jwPlayerHandler);
           mPlayer.addListener(EventType.FIRST_FRAME, jwPlayerHandler);
           mPlayer.addListener(EventType.SETUP_ERROR, jwPlayerHandler);
-
+          mPlayer.allowBackgroundAudio(false);
           FrameLayout containerView = getBridge().getActivity().findViewById(containerViewId);
           if (containerView == null) {
             containerView = new FrameLayout(getActivity().getApplicationContext());
@@ -314,7 +325,7 @@ public class JWPlayerPlugin extends Plugin {
 
   }
 
-  private void hideTransitionToRemove(){
+  private void hideTransitionToRemove() {
     RelativeLayout containerView2 = getBridge().getActivity().findViewById(grayViewBackId);
     if (containerView2 == null) {
       RelativeLayout.LayoutParams params = new
@@ -334,6 +345,7 @@ public class JWPlayerPlugin extends Plugin {
     bridge.getActivity().runOnUiThread(new Runnable() {
       @Override
       public void run() {
+        mPlayer.closeRelatedOverlay();
         removeProgress();
         hideTransitionToRemove();
         getBridge().getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -341,9 +353,9 @@ public class JWPlayerPlugin extends Plugin {
         FrameLayout containerView = getBridge().getActivity().findViewById(containerViewId);
         if (containerView != null) {
           containerView.setBackgroundColor(Color.BLACK);
-
           mPlayer.stop();
           mPlayer.removeListeners(jwPlayerHandler);
+          mPlayer = null;
           containerView.removeAllViews();
           ((ViewGroup) getBridge().getWebView().getParent()).removeView(containerView);
         } else {
@@ -380,7 +392,6 @@ public class JWPlayerPlugin extends Plugin {
                 @Override
                 public void onAnimationEnd(Animation animation) {
                   removeProgress();
-                  mPlayer = null;
                 }
 
                 @Override
@@ -434,6 +445,40 @@ public class JWPlayerPlugin extends Plugin {
     ret.put("name", name);
     ret.put("data", data);
     return ret;
+  }
+
+  private AdvertisingConfig generateAdConfiguration(JSONObject advertisingConfig) throws JSONException {
+    List<AdBreak> adSchedule = new ArrayList<>();
+    try {
+      if (advertisingConfig != null) {
+        JSONArray advertisingConfigArray = advertisingConfig.getJSONArray("schedule");
+        if (advertisingConfigArray.length() > 0) {
+          for (int i = 0; i < advertisingConfigArray.length(); i++) {
+            JSONObject data = (JSONObject) advertisingConfigArray.get(i);
+            AdBreak adBreak = new AdBreak.Builder()
+              .tag(data.getString("url"))
+              .offset(data.getString("begin"))
+              .build();
+            adSchedule.add(adBreak);
+          }
+        }
+        switch (advertisingConfig.getString("type")) {
+          case "ima":
+            return new ImaAdvertisingConfig.Builder()
+              .schedule(adSchedule)
+              .build();
+          case "vast":
+            return new VastAdvertisingConfig.Builder()
+              .schedule(adSchedule)
+              .build();
+          default:
+            return null;
+        }
+      }
+    } catch (Exception exception) {
+      Log.d(TAG, exception.getMessage());
+    }
+    return null;
   }
 
   class JWPlayerHandler implements VideoPlayerEvents.OnPlaylistCompleteListener, VideoPlayerEvents.OnPlayListener, VideoPlayerEvents.OnPauseListener,
@@ -532,7 +577,7 @@ public class JWPlayerPlugin extends Plugin {
     ViewGroup.LayoutParams mDefaultParams;
     ViewGroup.LayoutParams mFullscreenParams;
 
-    public FullScreenHandler_NoRotation(JWPlayerView view){
+    public FullScreenHandler_NoRotation(JWPlayerView view) {
       mPlayerView = view;
       mDefaultParams = mPlayerView.getLayoutParams();
     }
@@ -562,7 +607,7 @@ public class JWPlayerPlugin extends Plugin {
 
     }
 
-    private void doFullscreen(boolean fullscreen){
+    private void doFullscreen(boolean fullscreen) {
       if (fullscreen) {
         mFullscreenParams = fullscreenLayoutParams(mDefaultParams);
         mPlayerView.setLayoutParams(mFullscreenParams);
