@@ -37,9 +37,11 @@ export class JWPlayerWeb extends WebPlugin implements JWPlayerPlugin {
             const config = {
                 ...options.webConfiguration!.properties ?? {},
             };
-            if (options.advertisingConfig) {
+            if (options.advertisingConfig && options.advertisingConfig.schedule) {
+                const timestamp = Math.floor(Date.now() / 1000);
                 config.advertising = {
                     client: options.advertisingConfig.type == 'vast' ? 'vast' : 'googima',
+                    adscheduleid: '' + timestamp,
                     schedule: options.advertisingConfig.schedule.map(c => {
                         return {
                             offset: c.begin, tag: c.url
