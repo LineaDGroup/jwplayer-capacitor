@@ -153,6 +153,13 @@ export class JWPlayerWeb extends WebPlugin implements JWPlayerPlugin {
             };
             this.notifyListeners('playerEvent', event);
         });
+        this.playerInstance.on('firstFrame', (eventData: any) => {
+            const event: JWPlayerEvent = {
+                name: 'firstFrame',
+                data: eventData
+            };
+            this.notifyListeners('playerEvent', event);
+        });
     }
 
     getPosition(): Promise<{ value: number }> {
