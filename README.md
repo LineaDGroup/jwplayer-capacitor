@@ -66,12 +66,12 @@ initialize(options: { webLicenseKey?: string; androidLicenseKey?: string; iosLic
 ### create(...)
 
 ```typescript
-create(options: { webConfiguration?: { container: string; properties?: any; }; nativeConfiguration?: JWPlayerNativeConfiguration; }) => any
+create(options: { webConfiguration?: { container: string; properties?: any; }; nativeConfiguration?: JWPlayerNativeConfiguration; advertisingConfig?: JWPlayerAd; }) => any
 ```
 
-| Param         | Type                                                                                                                                                                        |
-| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`options`** | <code>{ webConfiguration?: { container: string; properties?: any; }; nativeConfiguration?: <a href="#jwplayernativeconfiguration">JWPlayerNativeConfiguration</a>; }</code> |
+| Param         | Type                                                                                                                                                                                                                                  |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`options`** | <code>{ webConfiguration?: { container: string; properties?: any; }; nativeConfiguration?: <a href="#jwplayernativeconfiguration">JWPlayerNativeConfiguration</a>; advertisingConfig?: <a href="#jwplayerad">JWPlayerAd</a>; }</code> |
 
 **Returns:** <code>any</code>
 
@@ -244,6 +244,22 @@ Remove all listeners (including the network status changes) for this plugin.
 | **`forceFullScreenOnLandscape`** | <code>boolean</code> |
 | **`forceFullScreen`**            | <code>boolean</code> |
 | **`playlist`**                   | <code>{}</code>      |
+
+
+#### JWPlayerAd
+
+| Prop           | Type                |
+| -------------- | ------------------- |
+| **`type`**     | <code>string</code> |
+| **`schedule`** | <code>{}</code>     |
+
+
+#### JWPlayerAdSchedule
+
+| Prop        | Type                |
+| ----------- | ------------------- |
+| **`url`**   | <code>string</code> |
+| **`begin`** | <code>number</code> |
 
 
 #### JWPlayerCuePoint
