@@ -218,7 +218,7 @@ public class JWPlayerPlugin extends Plugin {
                                 JSONArray arrayCaptions = data.getJSONArray("tracks");
                                 if (arrayCaptions.length() > 0) {
                                     for (int j = 0; j < arrayCaptions.length(); j++) {
-                                        JSONObject captionData = (JSONObject) arrayCaptions.get(i);
+                                        JSONObject captionData = (JSONObject) arrayCaptions.get(j);
                                         if (captionData.has("kind") && captionData.getString("kind").equals("captions")) {
                                             Caption captionEn = new Caption.Builder()
                                                     .file((String) captionData.get("file"))
@@ -251,6 +251,7 @@ public class JWPlayerPlugin extends Plugin {
                     lp.leftMargin = getScaledPixels(x);
 
                     jwPlayerView.setLayoutParams(lp);
+                    jwPlayerView.setKeepScreenOn(true);
                     PlayerConfig.Builder config = new PlayerConfig.Builder()
                             .playlist(playlist)
                             .autostart(autostart);
