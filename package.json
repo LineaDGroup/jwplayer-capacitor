@@ -1,6 +1,6 @@
 {
   "name": "jwplayer-capacitor",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "Integration of JWPlayer Web and Mobile SDKs with Capacitor",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",

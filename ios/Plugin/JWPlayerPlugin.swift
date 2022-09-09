@@ -113,13 +113,14 @@ public class JWPlayerPlugin: CAPPlugin {
 
                     let nativeConfiguration : [String: Any]? = call.getObject("nativeConfiguration")
                     let playlist  =  nativeConfiguration?["playlist"] as! [[String:Any]]
+                    var playList : [JWPlayerItem] = []
 
 
-                    let posterURL = call.getString("posterURL", "")
-                    let width = nativeConfiguration?["width"] != nil ? nativeConfiguration?["width"] as! Double :  200
-                    let height = nativeConfiguration?["height"] != nil ? nativeConfiguration?["height"] as! Double :  200
-                    let x = nativeConfiguration?["x"] != nil ? nativeConfiguration?["x"] as! Double :  0
-                    let y = nativeConfiguration?["y"] != nil ? nativeConfiguration?["y"] as! Double :  0
+                    _ = call.getString("posterURL", "")
+                    _ = nativeConfiguration?["width"] != nil ? nativeConfiguration?["width"] as! Double :  200
+                    _ = nativeConfiguration?["height"] != nil ? nativeConfiguration?["height"] as! Double :  200
+                    _ = nativeConfiguration?["x"] != nil ? nativeConfiguration?["x"] as! Double :  0
+                    _ = nativeConfiguration?["y"] != nil ? nativeConfiguration?["y"] as! Double :  0
                     let autostart = nativeConfiguration?["autostart"] ?? false
                     let forceFullScreenOnLandscape = nativeConfiguration?["forceFullScreenOnLandscape"] != nil ? nativeConfiguration?["forceFullScreenOnLandscape"] as! Bool : true
                     let forceFullScreen = nativeConfiguration?["forceFullScreen"] != nil ? nativeConfiguration?["forceFullScreen"] as! Bool : true
@@ -127,7 +128,6 @@ public class JWPlayerPlugin: CAPPlugin {
 
 
                     print("PLUGIN .............")
-                    var playList : [JWPlayerItem] = []
 
                     for video in playlist {
                         if video["file"] == nil {
@@ -135,19 +135,18 @@ public class JWPlayerPlugin: CAPPlugin {
                             return
                         }
                         var captionTracks = [JWMediaTrack]()
-                        if let captions = video["captions"] as? [[String:Any]]{
+                        if let captions = video["tracks"] as? [[String:Any]]{
                             for caption in captions {
-                                let urlString = caption["url"] as! String?
-                                let url = URL(string: urlString!)!
-                                let builder = JWCaptionTrackBuilder()
-                                    .file(url)
-                                    .label(caption["label"] as! String)
-                                    .defaultTrack((caption["default"] as! Bool?)!)
-                                do {
-                                    let englishTrack = try builder.build()
-                                    captionTracks.append(englishTrack)
-                                } catch {
-                                    // Handle error
+                                if let kind = caption["kind"] as? String  {
+                                    if kind == "captions" {
+                                        let urlString = caption["file"] as! String?
+                                        let url = URL(string: urlString!)!
+                                        let builder = JWCaptionTrackBuilder()
+                                            .file(url)
+                                            .label(caption["label"] as! String)
+                                        let englishTrack = try builder.build()
+                                        captionTracks.append(englishTrack)
+                                    }
                                 }
                             }
                         }
@@ -174,10 +173,14 @@ public class JWPlayerPlugin: CAPPlugin {
                      }*/
 
                     // Second, create a player config with the created JWPlayerItem. Add the related config.
-                    let config = try JWPlayerConfigurationBuilder()
+                    let params = JWPlayerConfigurationBuilder()
                         .playlist(playList)
                         .autostart(autostart as! Bool)
-                        .build()
+                    if let advertisingConfig = call.getObject("advertisingConfig"){
+                        let addConfig = try self._generateAdConfig(advertisingConfig)
+                        params.advertising(addConfig)
+                    }
+                    let config = try params.build()
                     self.playerViewController!.player.configurePlayer(with: config)
                     // self.playerViewController!.delegate?.playerViewControllerDidGoFullScreen()
                     self.playerViewController?.view.frame = CGRect(
@@ -228,7 +231,11 @@ public class JWPlayerPlugin: CAPPlugin {
                     self.notifyListeners("onJWPlayerReady", data: nil)
                     self.playerViewController?.transitionToFullScreen(animated: true)
                 }
-            }catch let error as NSError {
+            }
+            catch JWplayerCapacitorPluginError.errorBuildingAdConfig {
+                print("Error building advertising")
+            }
+            catch let error as NSError {
                 print("Fail: \(error.localizedDescription)")
             }
 
@@ -236,6 +243,39 @@ public class JWPlayerPlugin: CAPPlugin {
         call.resolve([
             "created": true
         ])
+    }
+
+
+    func _generateAdConfig(_ advertismentConfig: [String:Any]) throws -> JWPlayerKit.JWAdvertisingConfig{
+        var adList : [JWAdBreak] = []
+        if let advertisingConfigArray = advertismentConfig["schedule"] as? [[String:Any]]{
+            for ad in advertisingConfigArray {
+                let adBreakBuilder = JWAdBreakBuilder()
+                    .offset(.midroll(seconds: ad["begin"] as! Double))
+                    .tags([URL(string: ad["url"] as! String)!])
+                guard let adBreak = try? adBreakBuilder.build() else {
+                    // Handle build error
+                    print("Error parsing ad")
+                    throw JWplayerCapacitorPluginError.errorBuildingAdConfig
+                }
+                adList.append(adBreak)
+            }
+        }
+        let adConfigBuilder = JWImaAdvertisingConfigBuilder()
+            .schedule(adList)
+        guard let adConfig = try? adConfigBuilder.build() else {
+            print("Error building config")
+            throw JWplayerCapacitorPluginError.errorBuildingAdConfig
+        }
+        return adConfig
+
+    }
+
+    func _convertToTimeInterval(_time: String) -> TimeInterval {
+        guard _time != "" else {
+            return 0
+        }
+        return Double(_time) ?? 0
     }
 
     func setUpCastController() {
@@ -377,5 +417,9 @@ class PluginViewController: JWPlayerViewController, JWPlayerViewControllerDelega
 
 
 
+}
+enum JWplayerCapacitorPluginError: Error {
+    case errorBuildingAdConfig
+    case unexpected(code: Int)
 }
 
