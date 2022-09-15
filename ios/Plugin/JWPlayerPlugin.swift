@@ -79,6 +79,7 @@ public class JWPlayerPlugin: CAPPlugin {
 
 
     @objc func remove(_ call: CAPPluginCall){
+
         DispatchQueue.main.async {
             if self.playerViewController != nil {
                 self.playerViewController?.player.stop()
@@ -150,10 +151,12 @@ public class JWPlayerPlugin: CAPPlugin {
                                 }
                             }
                         }
-
+                        print(video["file"])
                         let playerItem = try JWPlayerItemBuilder()
                             .file(URL(string: video["file"] as! String)!)
                             .mediaTracks(captionTracks)
+
+
                             .title(video["title"] as! String)
                             .description(video["description"] as! String)
                             .startTime((video["starttime"] != nil) ? video["starttime"] as! Double : 0)
@@ -172,14 +175,18 @@ public class JWPlayerPlugin: CAPPlugin {
                      .build()
                      }*/
 
+
+
                     // Second, create a player config with the created JWPlayerItem. Add the related config.
                     let params = JWPlayerConfigurationBuilder()
                         .playlist(playList)
                         .autostart(autostart as! Bool)
+
                     if let advertisingConfig = call.getObject("advertisingConfig"){
                         let addConfig = try self._generateAdConfig(advertisingConfig)
                         params.advertising(addConfig)
                     }
+
                     let config = try params.build()
                     self.playerViewController!.player.configurePlayer(with: config)
                     // self.playerViewController!.delegate?.playerViewControllerDidGoFullScreen()
@@ -250,15 +257,18 @@ public class JWPlayerPlugin: CAPPlugin {
         var adList : [JWAdBreak] = []
         if let advertisingConfigArray = advertismentConfig["schedule"] as? [[String:Any]]{
             for ad in advertisingConfigArray {
-                let adBreakBuilder = JWAdBreakBuilder()
-                    .offset(.midroll(seconds: ad["begin"] as! Double))
-                    .tags([URL(string: ad["url"] as! String)!])
-                guard let adBreak = try? adBreakBuilder.build() else {
-                    // Handle build error
-                    print("Error parsing ad")
-                    throw JWplayerCapacitorPluginError.errorBuildingAdConfig
+                let url =  URL(string: ad["url"] as? String ?? "")
+                if url != nil && ad["url"] != nil && ad["begin"] != nil {
+                    let adBreakBuilder = JWAdBreakBuilder()
+                        .offset(.midroll(seconds: ad["begin"] as! Double))
+                        .tags([url!])
+                    guard let adBreak = try? adBreakBuilder.build() else {
+                        // Handle build error
+                        print("Error parsing ad")
+                        throw JWplayerCapacitorPluginError.errorBuildingAdConfig
+                    }
+                    adList.append(adBreak)
                 }
-                adList.append(adBreak)
             }
         }
         let adConfigBuilder = JWImaAdvertisingConfigBuilder()
@@ -290,6 +300,7 @@ public class JWPlayerPlugin: CAPPlugin {
     }
 
 
+
     @objc func getPosition(_ call: CAPPluginCall) {
         var time = 0.0
         if ((self.playerViewController?.player) != nil) {
@@ -312,6 +323,21 @@ class PluginViewController: JWPlayerViewController, JWPlayerViewControllerDelega
         delegate = self
         self.forceFullScreenOnLandscape = true
         self.forceLandscapeOnFullScreen = true
+        self.player.volume = 1
+        do {
+            let skinStylingBuilder = JWPlayerSkinBuilder()
+
+            let builder = JWCaptionStyleBuilder()
+                .fontColor(.white)
+                .highlightColor(.black)
+                .backgroundColor(UIColor(white: 0.0, alpha: 0.5))
+                .edgeStyle(.raised)
+            let style = try builder.build()
+            self.playerView.captionStyle = style
+            self.offlineMessage = ""
+        }catch let error as NSError {
+            print("Fail: \(error.localizedDescription)")
+        }
 
     }
     func playerViewControllerWillGoFullScreen(_ controller: JWPlayerViewController) -> JWFullScreenViewController? {
