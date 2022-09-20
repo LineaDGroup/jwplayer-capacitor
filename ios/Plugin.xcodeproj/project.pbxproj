@@ -16,6 +16,7 @@
 		50ADFFA82020EE4F00D50D53 /* JWPlayerPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = 50ADFFA72020EE4F00D50D53 /* JWPlayerPlugin.m */; };
 		50E1A94820377CB70090CE1A /* JWPlayerPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E1A94720377CB70090CE1A /* JWPlayerPlugin.swift */; };
 		8A15BA1ABF3EA1DDE71D87B8 /* Pods_PluginTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DCB22A81A7F5E855BB0C6AF /* Pods_PluginTests.framework */; };
+		E2F7B63828D94B1500888E57 /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2F7B63728D94B1500888E57 /* PlayerViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,6 +45,7 @@
 		5F34468D2B23D0F2BFCE8928 /* Pods-PluginTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PluginTests.release.xcconfig"; path = "Target Support Files/Pods-PluginTests/Pods-PluginTests.release.xcconfig"; sourceTree = "<group>"; };
 		7020DCE2D820464258206F26 /* Pods-PluginTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PluginTests.debug.xcconfig"; path = "Target Support Files/Pods-PluginTests/Pods-PluginTests.debug.xcconfig"; sourceTree = "<group>"; };
 		B8E65C3FAC907C2D0EB0FF38 /* Pods-Plugin.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Plugin.debug.xcconfig"; path = "Target Support Files/Pods-Plugin/Pods-Plugin.debug.xcconfig"; sourceTree = "<group>"; };
+		E2F7B63728D94B1500888E57 /* PlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerViewController.swift; sourceTree = "<group>"; };
 		F8855AB61D14E364A877BA4A /* Pods_Plugin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Plugin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -77,7 +79,6 @@
 				7020DCE2D820464258206F26 /* Pods-PluginTests.debug.xcconfig */,
 				5F34468D2B23D0F2BFCE8928 /* Pods-PluginTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -109,6 +110,7 @@
 				50ADFF8B201F53D600D50D53 /* JWPlayerPlugin.h */,
 				50ADFFA72020EE4F00D50D53 /* JWPlayerPlugin.m */,
 				50ADFF8C201F53D600D50D53 /* Info.plist */,
+				E2F7B63728D94B1500888E57 /* PlayerViewController.swift */,
 			);
 			path = Plugin;
 			sourceTree = "<group>";
@@ -362,6 +364,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				50E1A94820377CB70090CE1A /* JWPlayerPlugin.swift in Sources */,
+				E2F7B63828D94B1500888E57 /* PlayerViewController.swift in Sources */,
 				2F98D68224C9AAE500613A4C /* JWPlayer.swift in Sources */,
 				50ADFFA82020EE4F00D50D53 /* JWPlayerPlugin.m in Sources */,
 			);
