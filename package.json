@@ -1,6 +1,6 @@
 {
   "name": "jwplayer-capacitor",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "Integration of JWPlayer Web and Mobile SDKs with Capacitor",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
@@ -47,10 +47,10 @@
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
-    "@capacitor/android": "^3.0.0",
-    "@capacitor/core": "^3.0.0",
+    "@capacitor/android": "^4.0.1",
+    "@capacitor/core": "^4.0.1",
     "@capacitor/docgen": "^0.0.10",
-    "@capacitor/ios": "^3.0.0",
+    "@capacitor/ios": "^4.0.1",
     "@ionic/eslint-config": "^0.3.0",
     "@ionic/prettier-config": "^1.0.1",
     "@ionic/swiftlint-config": "^1.1.2",
