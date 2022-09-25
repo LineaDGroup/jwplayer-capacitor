@@ -45,13 +45,7 @@ class PlayerViewController: JWPlayerViewController, JWPlayerViewControllerDelega
     }
 
     func playerViewControllerDidGoFullScreen(_ controller: JWPlayerViewController) {
-        print("entrando full screen")
-
-        let dictionary: [String : Any] = [
-            "name" : "fullScreenPlayerEvent",
-            "data" : controller.isFullScreen,
-        ]
-        capacitor?.notifyEvent("fullScreenPlayerEvent", data: dictionary as! [String : Any] )
+       
     }
 
     func playerViewControllerWillDismissFullScreen(_ controller: JWPlayerViewController) {
@@ -59,7 +53,7 @@ class PlayerViewController: JWPlayerViewController, JWPlayerViewControllerDelega
         
         let dictionary: [String : Any] = [
             "name" : "fullScreenPlayerEvent",
-            "data" : controller.isFullScreen,
+            "data" : false,
         ]
         capacitor?.notifyEvent("fullScreenPlayerEvent", data: dictionary as! [String : Any] )
     }

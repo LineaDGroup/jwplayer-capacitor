@@ -13,7 +13,7 @@ import UIKit
     private var playerViewController : PlayerViewController?
     private var castController : JWCastController?
     private var isFront = false
-    private var progressView: UIView = UIView()
+    private var progressView: UIView?
     
     init(plugin: JWPlayerPlugin) {
         self.plugin = plugin
@@ -83,8 +83,9 @@ import UIKit
                     self.playerViewController!.view?.autoresizingMask = [.flexibleHeight, .flexibleWidth]
                     self.plugin.bridge?.webView!.addSubview(self.playerViewController!.view)
                     self.plugin.bridge?.viewController?.addChild(self.playerViewController!)
-                    self.progressView.removeFromSuperview()
-                    self.progressView.superview?.removeFromSuperview()
+                    self.progressView?.removeFromSuperview()
+                    self.progressView?.superview?.removeFromSuperview()
+                    self.progressView = nil
                     self.playerViewController?.transitionToFullScreen(animated: true)
                 }
             }
@@ -100,8 +101,27 @@ import UIKit
     }
     
     @objc func remove(completion: @escaping () -> Void){
-        print("Removing player")
         DispatchQueue.main.async {
+            if self.progressView == nil {
+                var spinner = UIActivityIndicatorView(style: .whiteLarge)
+                spinner.translatesAutoresizingMaskIntoConstraints = false
+                spinner.startAnimating()
+                self.progressView = UIView()
+                self.progressView!.backgroundColor = UIColor(white: 0, alpha: 1)
+                self.progressView!.addSubview(spinner)
+                self.progressView!.center = (self.plugin.webView?.superview!.center)!
+                self.progressView!.frame = CGRect(
+                    x: 0,
+                    y: 0,
+                    width: (self.plugin.bridge?.viewController?.view.frame.width)!,
+                    height: (self.plugin.bridge?.viewController?.view.frame.height)!
+                )
+                
+                spinner.centerXAnchor.constraint(equalTo: self.progressView!.centerXAnchor).isActive = true
+                spinner.centerYAnchor.constraint(equalTo: self.progressView!.centerYAnchor).isActive = true
+                self.plugin.bridge?.webView?.superview!.addSubview(self.progressView!)
+                self.plugin.bridge?.webView?.superview!.superview?.bringSubviewToFront(self.progressView!)
+            }
             if self.playerViewController != nil {
                 self.playerViewController?.player.stop()
                 self.plugin.bridge?.viewController?.view.sendSubviewToBack(self.playerViewController!.view)
@@ -110,6 +130,14 @@ import UIKit
                 self.playerViewController!.removeFromParent()
                 self.playerViewController!.view = nil
                 self.playerViewController = nil
+                JWPlayer.supportedInterfaceOrientations = .portrait
+            }
+           
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 30) {
+            if self.progressView != nil {
+                self.progressView!.removeFromSuperview()
+                self.progressView!.superview?.removeFromSuperview()
             }
             completion()
         }
@@ -129,7 +157,7 @@ import UIKit
                     .file(URL(string: file)!)
                     .mediaTracks(captionTracks)
                     .title(video["title"] as! String)
-                    .description(video["description"] as! String)
+                    //.description(video["description"] as! String)
                     .startTime((video["starttime"] != nil) ? video["starttime"] as! Double : 0)
                     .build()
                 playList.append(playerItem)
@@ -196,20 +224,21 @@ import UIKit
             var spinner = UIActivityIndicatorView(style: .whiteLarge)
             spinner.translatesAutoresizingMaskIntoConstraints = false
             spinner.startAnimating()
-            strongSelf.progressView.backgroundColor = UIColor(white: 0, alpha: 1)
-            strongSelf.progressView.addSubview(spinner)
-            strongSelf.progressView.center = (strongSelf.plugin.webView?.superview!.center)!
-            strongSelf.progressView.frame = CGRect(
+            strongSelf.progressView = UIView()
+            strongSelf.progressView!.backgroundColor = UIColor(white: 0, alpha: 1)
+            strongSelf.progressView!.addSubview(spinner)
+            strongSelf.progressView!.center = (strongSelf.plugin.webView?.superview!.center)!
+            strongSelf.progressView!.frame = CGRect(
                 x: 0,
                 y: 0,
                 width: (strongSelf.plugin.bridge?.viewController?.view.frame.width)!,
                 height: (strongSelf.plugin.bridge?.viewController?.view.frame.height)!
             )
             
-            spinner.centerXAnchor.constraint(equalTo: strongSelf.progressView.centerXAnchor).isActive = true
-            spinner.centerYAnchor.constraint(equalTo: strongSelf.progressView.centerYAnchor).isActive = true            
-            strongSelf.plugin.bridge?.webView?.superview!.addSubview(strongSelf.progressView)
-            strongSelf.plugin.bridge?.webView?.superview!.superview?.bringSubviewToFront(strongSelf.progressView)
+            spinner.centerXAnchor.constraint(equalTo: strongSelf.progressView!.centerXAnchor).isActive = true
+            spinner.centerYAnchor.constraint(equalTo: strongSelf.progressView!.centerYAnchor).isActive = true
+            strongSelf.plugin.bridge?.webView?.superview!.addSubview(strongSelf.progressView!)
+            strongSelf.plugin.bridge?.webView?.superview!.superview?.bringSubviewToFront(strongSelf.progressView!)
             JWPlayer.supportedInterfaceOrientations = .landscape
         }
     }
