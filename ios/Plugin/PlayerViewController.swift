@@ -33,7 +33,7 @@ class PlayerViewController: JWPlayerViewController, JWPlayerViewControllerDelega
                 .edgeStyle(.raised)
             let style = try builder.build()
             self.playerView.captionStyle = style
-            self.offlineMessage = ""
+            self.offlineMessage = "..."
         }catch let error as NSError {
             print("Fail: \(error.localizedDescription)")
         }
@@ -45,12 +45,12 @@ class PlayerViewController: JWPlayerViewController, JWPlayerViewControllerDelega
     }
 
     func playerViewControllerDidGoFullScreen(_ controller: JWPlayerViewController) {
-       
+
     }
 
     func playerViewControllerWillDismissFullScreen(_ controller: JWPlayerViewController) {
         print("Eliminando full screen")
-        
+
         let dictionary: [String : Any] = [
             "name" : "fullScreenPlayerEvent",
             "data" : false,
@@ -59,7 +59,7 @@ class PlayerViewController: JWPlayerViewController, JWPlayerViewControllerDelega
     }
 
     func playerViewControllerDidDismissFullScreen(_ controller: JWPlayerViewController) {
-       
+
 
     }
 
@@ -139,7 +139,7 @@ class PlayerViewController: JWPlayerViewController, JWPlayerViewControllerDelega
                 "position": time.position.binade
             ]
         ]
-        capacitor?.notifyEvent("playerEvent", data: dictionary as! [String : Any] )
+        //capacitor?.notifyEvent("playerEvent", data: dictionary as! [String : Any] )
     }
 
     override func jwplayer(_ player: JWPlayerKit.JWPlayer, didLoadPlaylistItem item: JWPlayerItem, at index: UInt) {
@@ -170,6 +170,17 @@ class PlayerViewController: JWPlayerViewController, JWPlayerViewControllerDelega
             "name" : "playlistComplete",
             "data" : [
                 "complete": true
+            ]
+        ]
+        capacitor?.notifyEvent("playerEvent", data: dictionary )
+    }
+
+    override func jwplayer(_ player: JWPlayerKit.JWPlayer, failedWithError code: UInt, message: String) {
+        super.jwplayer(player, failedWithError: code, message: message)
+        let dictionary: [String : Any] = [
+            "name" : "error",
+            "data" : [
+                "error": message.description
             ]
         ]
         capacitor?.notifyEvent("playerEvent", data: dictionary )

@@ -12,20 +12,21 @@ public class JWPlayerPlugin: CAPPlugin {
     private var implementation: JWPlayer?
     
     override public func load() {
-        if self.implementation == nil {
-            self.implementation = JWPlayer(plugin: self)
-        }
+
     }
-    
+
     @objc func echo(_ call: CAPPluginCall) {
         let value = call.getString("value") ?? ""
         call.resolve([
             "value": true
         ])
     }
-    
-    
+
+
     @objc func initialize(_ call: CAPPluginCall) {
+        if self.implementation == nil {
+            self.implementation = JWPlayer(plugin: self)
+        }
         let JWPLAYER_KEY = call.getString("iosLicenseKey", "")
         let GOOGLE_CAST_ID = call.getString("googleCastId", "")
         self.implementation?.load(JWPLAYER_KEY, googleCastId: GOOGLE_CAST_ID, completion: {
@@ -34,15 +35,18 @@ public class JWPlayerPlugin: CAPPlugin {
             ])
         })
     }
-    
-    
+
+
     @objc func remove(_ call: CAPPluginCall){
         self.implementation?.remove(completion: {
+            self.implementation = nil
             call.resolve([
                 "removed": true
             ])
         })
     }
+
+
     
     @objc func create(_ call: CAPPluginCall) {
         let nativeConfiguration : [String: Any]? = call.getObject("nativeConfiguration")
