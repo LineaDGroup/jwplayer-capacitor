@@ -3,7 +3,7 @@ ext {
     androidxAppCompatVersion = project.hasProperty('androidxAppCompatVersion') ? rootProject.ext.androidxAppCompatVersion : '1.2.0'
     androidxJunitVersion = project.hasProperty('androidxJunitVersion') ? rootProject.ext.androidxJunitVersion : '1.1.2'
     androidxEspressoCoreVersion = project.hasProperty('androidxEspressoCoreVersion') ? rootProject.ext.androidxEspressoCoreVersion : '3.3.0'
-    jwPlayerVersion = project.hasProperty('jwPlayerVersion') ? rootProject.ext.jwPlayerVersion : '4.5.1'
+    jwPlayerVersion = project.hasProperty('jwPlayerVersion') ? rootProject.ext.jwPlayerVersion : '4.3.0'
     exoplayerVersion = project.hasProperty('exoplayerVersion') ? rootProject.ext.exoplayerVersion : '2.16.1'
 }
 
@@ -65,16 +65,8 @@ dependencies {
     implementation "com.jwplayer:jwplayer-common:$jwPlayerVersion"
     implementation "com.jwplayer:jwplayer-chromecast:$jwPlayerVersion"
     implementation "com.jwplayer:jwplayer-ima:$jwPlayerVersion"
-    implementation 'com.google.android.gms:play-services-cast-framework:19.0.0'
     implementation 'com.google.ads.interactivemedia.v3:interactivemedia:3.28.1'
     implementation 'com.google.android.gms:play-services-ads-identifier:3.28.1'
-    // ExoPlayer dependencies
-    implementation "com.google.android.exoplayer:exoplayer-core:$exoplayerVersion"
-    implementation "com.google.android.exoplayer:exoplayer-dash:$exoplayerVersion"
-    implementation "com.google.android.exoplayer:exoplayer-hls:$exoplayerVersion"
-    implementation "com.google.android.exoplayer:exoplayer-smoothstreaming:$exoplayerVersion"
-    implementation "com.google.android.exoplayer:exoplayer-ui:$exoplayerVersion"
-
     // JW Player Native UI dependencies
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
