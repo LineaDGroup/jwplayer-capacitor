@@ -62,9 +62,7 @@ public class JWPlayerPlugin: CAPPlugin {
         
     }
     
-    func setUpCastController() {
-        // self.castController = JWCastController(player: self.playerViewController!.player)
-    }
+   
     
     
     @objc func addButton(_ call: CAPPluginCall) {

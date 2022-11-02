@@ -32,14 +32,11 @@ import UIKit
             return
         }
         JWPlayerKitLicense.setLicenseKey(self.JWPLAYER_KEY)
-        if self.GOOGLE_CAST_ID != nil && !(self.GOOGLE_CAST_ID?.isEmpty ?? false){
-            let discoveryCriteria = GCKDiscoveryCriteria(applicationID:  self.GOOGLE_CAST_ID!)
-            let options = GCKCastOptions(discoveryCriteria: discoveryCriteria)
-            GCKCastContext.setSharedInstanceWith(options)
-        }
         self._showProgress()
         completion()
     }
+    
+   
     
     @objc public func getPostion(completion: @escaping (Double) -> Void) {
         var time = 0.0
@@ -53,6 +50,9 @@ import UIKit
         DispatchQueue.main.async {
             do {
                 if self.playerViewController == nil {
+                    let discoveryCriteria = GCKDiscoveryCriteria(applicationID:  self.GOOGLE_CAST_ID ?? "CC1AD845" )
+                    let options = GCKCastOptions(discoveryCriteria: discoveryCriteria)
+                    GCKCastContext.setSharedInstanceWith(options)
                     var playList : [JWPlayerItem] = []
                     self.playerViewController = PlayerViewController()
                     self.playerViewController?.capacitor = self.plugin
@@ -242,6 +242,7 @@ import UIKit
             strongSelf.plugin.bridge?.webView?.superview!.addSubview(strongSelf.progressView!)
             strongSelf.plugin.bridge?.webView?.superview!.superview?.bringSubviewToFront(strongSelf.progressView!)
             JWPlayer.supportedInterfaceOrientations = .landscape
+            
         }
     }
 }
