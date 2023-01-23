@@ -32,14 +32,11 @@ import UIKit
             return
         }
         JWPlayerKitLicense.setLicenseKey(self.JWPLAYER_KEY)
-        if self.GOOGLE_CAST_ID != nil && !(self.GOOGLE_CAST_ID?.isEmpty ?? false){
-            let discoveryCriteria = GCKDiscoveryCriteria(applicationID:  self.GOOGLE_CAST_ID!)
-            let options = GCKCastOptions(discoveryCriteria: discoveryCriteria)
-            GCKCastContext.setSharedInstanceWith(options)
-        }
         self._showProgress()
         completion()
     }
+    
+   
     
     @objc public func getPostion(completion: @escaping (Double) -> Void) {
         var time = 0.0
@@ -53,6 +50,9 @@ import UIKit
         DispatchQueue.main.async {
             do {
                 if self.playerViewController == nil {
+                    let discoveryCriteria = GCKDiscoveryCriteria(applicationID:  self.GOOGLE_CAST_ID ?? "CC1AD845" )
+                    let options = GCKCastOptions(discoveryCriteria: discoveryCriteria)
+                    GCKCastContext.setSharedInstanceWith(options)
                     var playList : [JWPlayerItem] = []
                     self.playerViewController = PlayerViewController()
                     self.playerViewController?.capacitor = self.plugin
@@ -81,7 +81,7 @@ import UIKit
                     
                     self.playerViewController?.playerView.videoGravity = .resizeAspect
                     self.playerViewController!.view?.autoresizingMask = [.flexibleHeight, .flexibleWidth]
-                    self.plugin.bridge?.webView!.addSubview(self.playerViewController!.view)
+                    //self.plugin.bridge?.webView!.addSubview(self.playerViewController!.view)
                     self.plugin.bridge?.viewController?.addChild(self.playerViewController!)
                     self.progressView?.removeFromSuperview()
                     self.progressView?.superview?.removeFromSuperview()
@@ -97,18 +97,19 @@ import UIKit
             }
             completion()
         }
-        
+
     }
-    
+
     @objc func remove(completion: @escaping () -> Void){
         DispatchQueue.main.async {
-            if self.progressView == nil {
+            if self.progressView == nil && self.plugin.bridge?.webView?.superview != nil{
                 var spinner = UIActivityIndicatorView(style: .whiteLarge)
                 spinner.translatesAutoresizingMaskIntoConstraints = false
                 spinner.startAnimating()
                 self.progressView = UIView()
                 self.progressView!.backgroundColor = UIColor(white: 0, alpha: 1)
                 self.progressView!.addSubview(spinner)
+
                 self.progressView!.center = (self.plugin.webView?.superview!.center)!
                 self.progressView!.frame = CGRect(
                     x: 0,
@@ -116,14 +117,15 @@ import UIKit
                     width: (self.plugin.bridge?.viewController?.view.frame.width)!,
                     height: (self.plugin.bridge?.viewController?.view.frame.height)!
                 )
-                
                 spinner.centerXAnchor.constraint(equalTo: self.progressView!.centerXAnchor).isActive = true
                 spinner.centerYAnchor.constraint(equalTo: self.progressView!.centerYAnchor).isActive = true
-                self.plugin.bridge?.webView?.superview!.addSubview(self.progressView!)
-                self.plugin.bridge?.webView?.superview!.superview?.bringSubviewToFront(self.progressView!)
+                self.plugin.bridge?.webView?.superview?.addSubview(self.progressView!)
+                self.plugin.bridge?.webView?.superview?.superview?.bringSubviewToFront(self.progressView!)
             }
             if self.playerViewController != nil {
                 self.playerViewController?.player.stop()
+                self.playerViewController?.dismiss(animated: true)
+                self.playerViewController?.removeFromParent()
                 self.plugin.bridge?.viewController?.view.sendSubviewToBack(self.playerViewController!.view)
                 self.plugin.webView?.superview?.willRemoveSubview(self.playerViewController!.view)
                 self.playerViewController!.view.removeFromSuperview()
@@ -131,19 +133,18 @@ import UIKit
                 self.playerViewController!.view = nil
                 self.playerViewController = nil
                 JWPlayer.supportedInterfaceOrientations = .portrait
-            }
-           
+
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 30) {
             if self.progressView != nil {
                 self.progressView!.removeFromSuperview()
                 self.progressView!.superview?.removeFromSuperview()
             }
-            completion()
         }
+        completion()
     }
-    
-    
+
+
     @objc private func _generatePlayList(_ list: [[String:Any]]) throws -> [JWPlayerItem] {
         var playList : [JWPlayerItem] = []
         var captionTracks : [JWMediaTrack] = []
@@ -151,7 +152,7 @@ import UIKit
             if let tracks = video["tracks"] as? [[String:Any]] {
                 captionTracks = try self._generateCaptions(tracks)
             }
-            
+
             if let file = video["file"] as? String {
                 let playerItem = try JWPlayerItemBuilder()
                     .file(URL(string: file)!)
@@ -161,13 +162,13 @@ import UIKit
                     .startTime((video["starttime"] != nil) ? video["starttime"] as! Double : 0)
                     .build()
                 playList.append(playerItem)
-                
+
             }
         }
         return playList
     }
-    
-    
+
+
     @objc private func _generateCaptions(_ tracks: [[String:Any]]) throws -> [JWMediaTrack] {
         var captionTracks : [JWMediaTrack] = []
         for caption in tracks {
@@ -185,8 +186,8 @@ import UIKit
         }
         return captionTracks
     }
-    
-    
+
+
     @objc private func _generateAdConfig(_ advertismentConfig: [String:Any]) throws -> JWPlayerKit.JWAdvertisingConfig{
         var adList : [JWAdBreak] = []
         if let advertisingConfigArray = advertismentConfig["schedule"] as? [[String:Any]]{
@@ -212,10 +213,10 @@ import UIKit
             throw JWplayerCapacitorPluginError.errorBuildingAdConfig
         }
         return adConfig
-        
+
     }
-    
-    
+
+
     @objc private func _showProgress() {
         DispatchQueue.main.async { [weak self] in
             guard let strongSelf = self else {
@@ -227,7 +228,8 @@ import UIKit
             strongSelf.progressView = UIView()
             strongSelf.progressView!.backgroundColor = UIColor(white: 0, alpha: 1)
             strongSelf.progressView!.addSubview(spinner)
-            strongSelf.progressView!.center = (strongSelf.plugin.webView?.superview!.center)!
+            strongSelf.progressView!.center = (strongSelf.plugin.webView?.superview?.center)!
+
             strongSelf.progressView!.frame = CGRect(
                 x: 0,
                 y: 0,
@@ -240,6 +242,7 @@ import UIKit
             strongSelf.plugin.bridge?.webView?.superview!.addSubview(strongSelf.progressView!)
             strongSelf.plugin.bridge?.webView?.superview!.superview?.bringSubviewToFront(strongSelf.progressView!)
             JWPlayer.supportedInterfaceOrientations = .landscape
+            
         }
     }
 }
