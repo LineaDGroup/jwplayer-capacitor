@@ -109,14 +109,14 @@ import UIKit
                 self.progressView = UIView()
                 self.progressView!.backgroundColor = UIColor(white: 0, alpha: 1)
                 self.progressView!.addSubview(spinner)
-                //self.progressView!.center = (self.plugin.webView?.superview!.center)!
+
+                self.progressView!.center = (self.plugin.webView?.superview!.center)!
                 self.progressView!.frame = CGRect(
                     x: 0,
                     y: 0,
                     width: (self.plugin.bridge?.viewController?.view.frame.width)!,
                     height: (self.plugin.bridge?.viewController?.view.frame.height)!
                 )
-
                 spinner.centerXAnchor.constraint(equalTo: self.progressView!.centerXAnchor).isActive = true
                 spinner.centerYAnchor.constraint(equalTo: self.progressView!.centerYAnchor).isActive = true
                 self.plugin.bridge?.webView?.superview?.addSubview(self.progressView!)
@@ -133,7 +133,6 @@ import UIKit
                 self.playerViewController!.view = nil
                 self.playerViewController = nil
                 JWPlayer.supportedInterfaceOrientations = .portrait
-            }
 
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 30) {
@@ -230,6 +229,7 @@ import UIKit
             strongSelf.progressView!.backgroundColor = UIColor(white: 0, alpha: 1)
             strongSelf.progressView!.addSubview(spinner)
             strongSelf.progressView!.center = (strongSelf.plugin.webView?.superview?.center)!
+
             strongSelf.progressView!.frame = CGRect(
                 x: 0,
                 y: 0,

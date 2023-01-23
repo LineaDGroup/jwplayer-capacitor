@@ -45,7 +45,6 @@ class PlayerViewController: JWPlayerViewController, JWPlayerViewControllerDelega
     }
 
     func playerViewControllerDidGoFullScreen(_ controller: JWPlayerViewController) {
-
     }
 
     func playerViewControllerWillDismissFullScreen(_ controller: JWPlayerViewController) {
@@ -140,6 +139,28 @@ class PlayerViewController: JWPlayerViewController, JWPlayerViewControllerDelega
             ]
         ]
         //capacitor?.notifyEvent("playerEvent", data: dictionary as! [String : Any] )
+    }
+
+    override func jwplayer(_ player: JWPlayerKit.JWPlayer, didLoadPlaylistItem item: JWPlayerItem, at index: UInt) {
+        super.jwplayer(player as! JWPlayerKit.JWPlayer, didLoadPlaylistItem: item, at: index)
+        let dictionary: [String : Any] = [
+            "name" : "playlistItem",
+            "data" : [
+                "index": index
+            ]
+        ]
+        capacitor?.notifyEvent("playerEvent", data: dictionary )
+    }
+
+    override func jwplayerContentDidComplete(_ player: JWPlayerKit.JWPlayer) {
+        super.jwplayerContentDidComplete(player as! JWPlayerKit.JWPlayer)
+        let dictionary: [String : Any] = [
+            "name" : "complete",
+            "data" : [
+                "complete": true
+            ]
+        ]
+        capacitor?.notifyEvent("playerEvent", data: dictionary )
     }
 
     override func jwplayer(_ player: JWPlayerKit.JWPlayer, didLoadPlaylistItem item: JWPlayerItem, at index: UInt) {
